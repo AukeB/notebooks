@@ -354,33 +354,33 @@ def _(mo):
 def exercise_2_1_find_invalid_ids(product_id_ranges: list[str]) -> int:
     """ """
     invalid_ids = []
-    
+
     for product_range in product_id_ranges:
         separated_ids = product_range.split("-")
         first_id = int(separated_ids[0])
         last_id = int(separated_ids[1])
-    
+
         for id in range(first_id, last_id+1):
             id = str(id)
             num_digits = len(id)
-    
+
             for i in range(1, num_digits):
                 is_divisible = (num_digits % i == 0)
-    
+
                 if is_divisible:
                     num_digits_to_check = i
                     num_repeats = int(num_digits / i)
-    
+
                     id_parts = []
-    
+
                     for j in range(num_repeats):
                         if num_repeats == 2:
                             id_parts.append(id[j*i:(j+1)*i])
-    
+
                     if id_parts:
                         if id_parts[0] == id_parts[1]:
                             invalid_ids.append(int(id))
-    
+
     return sum(invalid_ids)
 
 
@@ -461,32 +461,32 @@ def _(mo):
 def exercise_2_2_find_invalid_ids(product_id_ranges: list[str]) -> int:
     """ """
     invalid_ids = []
-    
+
     for product_range in product_id_ranges:
         separated_ids = product_range.split("-")
         first_id = int(separated_ids[0])
         last_id = int(separated_ids[1])
-    
+
         for id in range(first_id, last_id+1):
             id = str(id)
             num_digits = len(id)
-    
+
             for i in range(1, num_digits):
                 is_divisible = (num_digits % i == 0)
-    
+
                 if is_divisible:
                     num_digits_to_check = i
                     num_repeats = int(num_digits / i)
-    
+
                     id_parts = []
-    
+
                     for j in range(num_repeats):
                         if num_digits_to_check >= 1:
                             id_parts.append(id[j*i:(j+1)*i])
-    
+
                     if id_parts:
                         are_id_parts_equal = True
-                        
+
                         for id_part in id_parts:
                             if id_part != id_parts[0]:
                                 are_id_parts_equal = False
@@ -499,7 +499,7 @@ def exercise_2_2_find_invalid_ids(product_id_ranges: list[str]) -> int:
                             pass
 
         #print()
-    
+
     return sum(invalid_ids)
 
 
@@ -512,6 +512,66 @@ def _(example_product_id_ranges):
 @app.cell
 def _(product_id_ranges):
     print(exercise_2_2_find_invalid_ids(product_id_ranges=product_id_ranges))
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Day 3
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Instructions
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Solutions
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Instructions
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Solution
+    """)
+    return
+
+
+@app.cell
+def _():
     return
 
 
