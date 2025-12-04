@@ -1,10 +1,10 @@
 import marimo
 
-__generated_with = "0.18.1"
+__generated_with = "0.18.2"
 app = marimo.App(width="medium")
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     # Advent of Code 2025
@@ -12,7 +12,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Imports
@@ -26,7 +26,7 @@ def _():
     return (mo,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Helper functions
@@ -56,7 +56,7 @@ def read_data(file_path: str, separator: str) -> list[str]:
     return rotation_data
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Day 1: Secret Entrance
@@ -64,7 +64,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Instructions
@@ -72,7 +72,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     The Elves have good news and bad news.
@@ -132,7 +132,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Solution
@@ -194,13 +194,13 @@ def _():
 
 @app.cell
 def _():
-    rotation_data = read_data(file_path="data/aoc_2025/day_1.txt", separator="\n")
+    rotation_data = read_data(file_path="../data/aoc_2025/day_1.txt", separator="\n")
 
     print(exercise_1_1_find_exact_zeros(rotation_data=rotation_data))
     return (rotation_data,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Instructions
@@ -244,7 +244,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Solution
@@ -314,7 +314,7 @@ def _(rotation_data):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Day 2: Gift Shop
@@ -322,7 +322,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Instructions
@@ -330,7 +330,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     You get inside and take the elevator to its only other stop: the gift shop. "Thank you for visiting the North Pole!" gleefully exclaims a nearby sign. You aren't sure who is even allowed to visit the North Pole, but you know you can access the lobby through here, and from there you can access the rest of the North Pole base.
@@ -375,7 +375,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Solution
@@ -455,13 +455,13 @@ def _():
 
 @app.cell
 def _():
-    product_id_ranges = read_data(file_path="data/aoc_2025/day_2.txt", separator=",")
+    product_id_ranges = read_data(file_path="../data/aoc_2025/day_2.txt", separator=",")
 
     print(exercise_2_1_find_invalid_ids(product_id_ranges=product_id_ranges))
     return (product_id_ranges,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Instructions
@@ -469,7 +469,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     The clerk quickly discovers that there are still invalid IDs in the ranges in your list. Maybe the young Elf was doing other silly patterns as well?
@@ -498,7 +498,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Solution
@@ -574,7 +574,7 @@ def _(product_id_ranges):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Day 3 - Lobby
@@ -704,7 +704,7 @@ def _():
 
 @app.cell
 def _():
-    joltage_ratings = read_data(file_path="data/aoc_2025/day_3.txt", separator="\n")
+    joltage_ratings = read_data(file_path="../data/aoc_2025/day_3.txt", separator="\n")
 
     print(exercise_3_1_find_largest_joltage(
        joltage_ratings=joltage_ratings
@@ -995,7 +995,7 @@ def _():
 
 @app.cell
 def _():
-    paper_roll_data = read_data(file_path="data/aoc_2025/day_4.txt", separator="\n")
+    paper_roll_data = read_data(file_path="../data/aoc_2025/day_4.txt", separator="\n")
 
     print(exercise_4_1_find_accessible_paper_rolls(
         paper_roll_data=paper_roll_data
