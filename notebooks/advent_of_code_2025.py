@@ -1,10 +1,10 @@
 import marimo
 
-__generated_with = "0.18.1"
+__generated_with = "0.18.2"
 app = marimo.App(width="medium", auto_download=["ipynb"])
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     # Advent of Code 2025
@@ -12,7 +12,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Imports
@@ -26,7 +26,7 @@ def _():
     return (mo,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Constants
@@ -37,11 +37,11 @@ def _(mo):
 @app.cell
 def _():
     DATA_DIRECTORY_PATH = "data/aoc_2025"
-    #DATA_DIRECTORY_PATH = "../" + DATA_DIRECTORY_PATH
+    DATA_DIRECTORY_PATH = "../" + DATA_DIRECTORY_PATH
     return (DATA_DIRECTORY_PATH,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Helper functions
@@ -71,7 +71,7 @@ def read_data(file_path: str, separator: str) -> list[str]:
     return rotation_data
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Day 1: Secret Entrance
@@ -79,7 +79,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Instructions
@@ -87,7 +87,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     The Elves have good news and bad news.
@@ -147,7 +147,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Solution
@@ -203,7 +203,7 @@ def _():
 
     solution_example_1_1 = exercise_1_1_find_exact_zeros(rotation_data=example_rotation_data)
 
-    assert(solution_example_1_1 == 3)
+    assert solution_example_1_1 == 3
     return (example_rotation_data,)
 
 
@@ -215,7 +215,7 @@ def _(DATA_DIRECTORY_PATH):
     return (rotation_data,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Instructions
@@ -223,7 +223,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     You're sure that's the right password, but the door won't open. You knock, but nobody answers. You build a snowman while you think.
@@ -259,7 +259,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Solution
@@ -319,7 +319,7 @@ def exercise_2_1_find_zero_pointings(
 def _(example_rotation_data):
     solution_example_1_2 = (exercise_2_1_find_zero_pointings(rotation_data=example_rotation_data))
 
-    assert(solution_example_1_2 == 6)
+    assert solution_example_1_2 == 6
     return
 
 
@@ -329,7 +329,7 @@ def _(rotation_data):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Day 2: Gift Shop
@@ -337,7 +337,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Instructions
@@ -345,7 +345,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     You get inside and take the elevator to its only other stop: the gift shop. "Thank you for visiting the North Pole!" gleefully exclaims a nearby sign. You aren't sure who is even allowed to visit the North Pole, but you know you can access the lobby through here, and from there you can access the rest of the North Pole base.
@@ -390,7 +390,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Solution
@@ -464,7 +464,7 @@ def _():
 
     solution_example_2_1 = (exercise_2_1_find_invalid_ids(product_id_ranges=example_product_id_ranges))
 
-    assert(solution_example_2_1, 1227775554)
+    assert solution_example_2_1, 1227775554
     return (example_product_id_ranges,)
 
 
@@ -476,7 +476,7 @@ def _(DATA_DIRECTORY_PATH):
     return (product_id_ranges,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Instructions
@@ -484,7 +484,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     The clerk quickly discovers that there are still invalid IDs in the ranges in your list. Maybe the young Elf was doing other silly patterns as well?
@@ -513,7 +513,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Solution
@@ -579,7 +579,7 @@ def exercise_2_2_find_invalid_ids(product_id_ranges: list[str]) -> int:
 def _(example_product_id_ranges):
     solution_example_2_2 = (exercise_2_2_find_invalid_ids(product_id_ranges=example_product_id_ranges))
 
-    assert(solution_example_2_2, 4174379265)
+    assert solution_example_2_2, 4174379265
     return
 
 
@@ -589,7 +589,7 @@ def _(product_id_ranges):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Day 3 - Lobby
@@ -597,7 +597,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Instructions
@@ -605,7 +605,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     You descend a short staircase, enter the surprisingly vast lobby, and are quickly cleared by the security checkpoint. When you get to the main elevators, however, you discover that each one has a red light above it: they're all offline.
@@ -641,7 +641,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Solution
@@ -713,7 +713,7 @@ def _():
         joltage_ratings=example_joltage_ratings
     )
 
-    assert(solution_example_3_1, 357)
+    assert solution_example_3_1, 357
     return (example_joltage_ratings,)
 
 
@@ -727,7 +727,7 @@ def _(DATA_DIRECTORY_PATH):
     return (joltage_ratings,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Instructions
@@ -735,7 +735,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     The escalator doesn't move. The Elf explains that it probably needs more joltage to overcome the static friction of the system and hits the big red "joltage limit safety override" button. You lose count of the number of times she needs to confirm "yes, I'm sure" and decorate the lobby a bit while you wait.
@@ -767,7 +767,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Solution
@@ -832,7 +832,7 @@ def _(example_joltage_ratings):
         joltage_ratings=example_joltage_ratings
     )
 
-    assert(solution_example_3_2, 3121910778619)
+    assert solution_example_3_2, 3121910778619
     return
 
 
@@ -844,7 +844,7 @@ def _(joltage_ratings):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Day 4 - Printing Department
@@ -852,7 +852,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Instructions
@@ -860,7 +860,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     You ride the escalator down to the printing department. They're clearly getting ready for Christmas; they have lots of large rolls of paper everywhere, and there's even a massive printer in the corner (to handle the really big print jobs).
@@ -910,7 +910,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Solution
@@ -1018,7 +1018,7 @@ def _(DATA_DIRECTORY_PATH):
     return (paper_roll_data,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Instructions
@@ -1026,7 +1026,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     Now, the Elves just need help accessing as much of the paper as they can.
@@ -1164,7 +1164,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Solution
@@ -1264,7 +1264,7 @@ def _(example_paper_roll_data):
         paper_roll_data=example_paper_roll_data
     )
 
-    assert(example_solution_4_2, 43)
+    assert example_solution_4_2, 43
     return
 
 
@@ -1276,7 +1276,7 @@ def _(paper_roll_data):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ## Day 5 - Cafetaria
@@ -1284,7 +1284,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Instructions
@@ -1292,7 +1292,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     As the forklifts break through the wall, the Elves are delighted to discover that there was a cafeteria on the other side after all.
@@ -1339,7 +1339,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 1 - Solution
@@ -1430,7 +1430,7 @@ def _(DATA_DIRECTORY_PATH):
     return (ingredient_data,)
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Instructions
@@ -1438,7 +1438,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     The Elves start bringing their spoiled inventory to the trash chute at the back of the kitchen.
@@ -1461,7 +1461,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(r"""
     ### Part 2 - Solution
@@ -1576,17 +1576,6 @@ def _(example_ingredient_data):
 @app.cell
 def _(ingredient_data):
     print(exercise_5_2_find_total_number_of_fresh_ingredients(ingredient_data=ingredient_data))
-    return
-
-
-@app.cell
-def _():
-    print('hoi')
-    return
-
-
-@app.cell
-def _():
     return
 
 
