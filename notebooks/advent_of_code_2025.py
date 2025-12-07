@@ -1877,9 +1877,9 @@ def exercise_6_2_help_with_math_homework(
             if add_or_multiply == "add":
                 total_sum_of_additions_and_multiplications += sum(numbers_to_add_or_multiply)
             elif add_or_multiply == "multiply":
-                product = 1
-                for number in numbers_to_add_or_multiply:
-                    product *= number
+                product: int = 1
+                for n in numbers_to_add_or_multiply:
+                    product *= n
                 total_sum_of_additions_and_multiplications += product
 
             add_or_multiply = ""
