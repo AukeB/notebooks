@@ -2319,68 +2319,63 @@ def exercise_7_2_find_number_of_timelines_iterative(
         int: Total number of unique timelines after the particle traverses the manifold.
     """
 
-    def advance_beam_one_row(
+    def propagate_beam_downward(
         beam_x_coordinates: list[int],
         choices: list[str],
-        next_row: list[str],
+        tachyon_manifold: list[str],
     ) -> tuple[list[int], list[str]]:
         """
-        Move the current beam one row downward in the tachyon manifold.
+        Propagate the beam downward through the manifold until the bottom is reached.
 
-        Examines the cell directly below the current beam position and updates
-        the beam path and choice history:
-        - If the cell is a splitter ('^'), a new branch to the left is created.
+        For each row below the current beam position:
+        - If the cell is a splitter ('^'), a left branch is chosen and recorded in choices.
         - If the cell is empty ('.'), the beam continues straight down.
 
         Args:
             beam_x_coordinates (list[int]): Current x-coordinates of the beam path.
             choices (list[str]): List of choices taken so far ('L', 'R', '-').
-            next_row (list[str]): The row of the manifold immediately below the current beam.
+            tachyon_manifold (list[str]): The full quantum tachyon manifold grid.
 
         Returns:
-            tuple[list[int], list[str]]: Updated beam x-coordinates and choices after moving one row.
+            tuple[list[int], list[str]]: Updated beam x-coordinates and choices after
+                propagating to the bottom of the manifold.
         """
+        while len(beam_x_coordinates) < len(tachyon_manifold):
+            x = beam_x_coordinates[-1]
+            char_below = tachyon_manifold[len(beam_x_coordinates)][x]
 
-        x = beam_x_coordinates[-1]
-        char_below = next_row[x]
-
-        if char_below == "^":
-            choices.append("L") # "L" means go one value to the left.
-            beam_x_coordinates.append(x-1)
-        if char_below == ".":
-            choices.append("-") # "-" means keeping the same x-coordinate.
-            beam_x_coordinates.append(x)
+            # Always go left when encountering a splitter.
+            if char_below == "^":
+                choices.append("L")
+                beam_x_coordinates.append(x - 1)
+            elif char_below == ".":
+                choices.append("-")
+                beam_x_coordinates.append(x)
 
         return beam_x_coordinates, choices
 
-
+    timeline_counter = 1
     choices = []
     beam_x_coordinates = [tachyon_manifold[0].index("S")]
 
-    while len(beam_x_coordinates) < len(tachyon_manifold):
-        beam_x_coordinates, choices = advance_beam_one_row(
-            beam_x_coordinates=beam_x_coordinates,
-            choices=choices,
-            next_row=tachyon_manifold[len(beam_x_coordinates)]
-        )
-
-    timeline_counter = 1
+    beam_x_coordinates, choices = propagate_beam_downward(
+        beam_x_coordinates, choices, tachyon_manifold
+    )
 
     while True:
         for i in range(len(beam_x_coordinates) - 1, -1, -1):
-            if choices[i-1] == "L":
+            if choices[i - 1] == "L":
+                # Backtrack to the previous choice.
                 beam_x_coordinates = beam_x_coordinates[:i].copy()
-                choices = choices[:i-1].copy()
+                choices = choices[:i - 1].copy()
 
-                choices.append("R") # "R" means go one to the right.
+                # Now take the right branch instead.
+                choices.append("R")
                 beam_x_coordinates.append(beam_x_coordinates[-1] + 1)
 
-                while len(beam_x_coordinates) < len(tachyon_manifold):
-                    beam_x_coordinates, choices = advance_beam_one_row(
-                        beam_x_coordinates=beam_x_coordinates,
-                        choices=choices,
-                        next_row=tachyon_manifold[len(beam_x_coordinates)],
-                    )
+                beam_x_coordinates, choices = propagate_beam_downward(
+                    beam_x_coordinates, choices, tachyon_manifold
+                )
 
                 timeline_counter += 1
                 break
