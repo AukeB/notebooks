@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.1"
+__generated_with = "0.18.3"
 app = marimo.App(width="medium", auto_download=["ipynb"])
 
 
@@ -37,7 +37,7 @@ def _(mo):
 @app.cell
 def _():
     DATA_DIRECTORY_PATH = "data/aoc_2025"
-    # DATA_DIRECTORY_PATH = "../" + DATA_DIRECTORY_PATH
+    DATA_DIRECTORY_PATH = "../" + DATA_DIRECTORY_PATH
     return (DATA_DIRECTORY_PATH,)
 
 
@@ -2318,7 +2318,7 @@ def exercise_7_2_find_number_of_timelines_iterative(
     Returns:
         int: Total number of unique timelines after the particle traverses the manifold.
     """
-    
+
     def advance_beam_one_row(
         beam_x_coordinates: list[int],
         choices: list[str],
@@ -2340,20 +2340,20 @@ def exercise_7_2_find_number_of_timelines_iterative(
         Returns:
             tuple[list[int], list[str]]: Updated beam x-coordinates and choices after moving one row.
         """
-        
+
         x = beam_x_coordinates[-1]
         char_below = next_row[x]
-    
+
         if char_below == "^":
             choices.append("L") # "L" means go one value to the left.
             beam_x_coordinates.append(x-1)
         if char_below == ".":
             choices.append("-") # "-" means keeping the same x-coordinate.
             beam_x_coordinates.append(x)
-    
+
         return beam_x_coordinates, choices
 
-    
+
     choices = []
     beam_x_coordinates = [tachyon_manifold[0].index("S")]
 
@@ -2374,7 +2374,7 @@ def exercise_7_2_find_number_of_timelines_iterative(
 
                 choices.append("R") # "R" means go one to the right.
                 beam_x_coordinates.append(beam_x_coordinates[-1] + 1)
-                
+
                 while len(beam_x_coordinates) < len(tachyon_manifold):
                     beam_x_coordinates, choices = advance_beam_one_row(
                         beam_x_coordinates=beam_x_coordinates,
