@@ -23,7 +23,9 @@ def _(mo):
 @app.cell
 def _():
     import marimo as mo
-    return (mo,)
+
+    from collections import defaultdict
+    return defaultdict, mo
 
 
 @app.cell(hide_code=True)
@@ -2243,47 +2245,49 @@ def _(mo):
     return
 
 
-@app.function
-def exercise_7_2_find_number_of_timelines(
-    tachyon_manifold: list[str]
-) -> int:
-    """
-    Count the total number of quantum timelines for a single tachyon particle
-    traversing a quantum tachyon manifold using the many-worlds interpretation.
+@app.cell
+def exercise_7_2_find_number_of_timelines(defaultdict):
+    def exercise_7_2_find_number_of_timelines(
+        tachyon_manifold: list[str]
+    ) -> int:
+        """
+        Count the total number of quantum timelines for a single tachyon particle
+        traversing a quantum tachyon manifold using the many-worlds interpretation.
 
-    Each splitter ('^') splits the current timeline into two: one going left
-    and one going right. Timelines do not merge; every possible path is counted
-    as a distinct timeline. The particle starts at the location marked 'S' in
-    the top row and moves downward, creating new timelines at each splitter.
+        Each splitter ('^') splits the current timeline into two: one going left
+        and one going right. Timelines do not merge; every possible path is counted
+        as a distinct timeline. The particle starts at the location marked 'S' in
+        the top row and moves downward, creating new timelines at each splitter.
 
-    Args:
-        tachyon_manifold (list[str]): A list of strings representing the quantum
-            tachyon manifold. 'S' marks the starting point, '.' is empty space,
-            and '^' is a splitter.
+        Args:
+            tachyon_manifold (list[str]): A list of strings representing the quantum
+                tachyon manifold. 'S' marks the starting point, '.' is empty space,
+                and '^' is a splitter.
 
-    Returns:
-        int: Total number of unique timelines after the particle traverses the manifold.
-    """
-    timeline_counter = {tachyon_manifold[0].index("S"): 1}
+        Returns:
+            int: Total number of unique timelines after the particle traverses the manifold.
+        """
+        timeline_counter = {tachyon_manifold[0].index("S"): 1}
 
-    for i in range(len(tachyon_manifold) - 1):            
-        beam_counter_per_row = {}
+        for i in range(len(tachyon_manifold) - 1):            
+            beam_counter_per_row = defaultdict(int)
 
-        for x in timeline_counter.keys():
-            if tachyon_manifold[i+1][x] == "^":
-                beam_counter_per_row[x-1] = beam_counter_per_row.get(x-1, 0) + timeline_counter[x]
-                beam_counter_per_row[x+1] = beam_counter_per_row.get(x+1, 0) + timeline_counter[x]
-            else:
-                beam_counter_per_row[x] = beam_counter_per_row.get(x, 0) + timeline_counter[x]
+            for x, count in timeline_counter.items():
+                if tachyon_manifold[i+1][x] == "^":
+                    beam_counter_per_row[x-1] += count
+                    beam_counter_per_row[x+1] += count
+                else:
+                    beam_counter_per_row[x] += count
 
-        timeline_counter = beam_counter_per_row
+            timeline_counter = beam_counter_per_row
 
-    total_number_of_timelines = sum(timeline_counter.values())
-    return total_number_of_timelines
+        total_number_of_timelines = sum(timeline_counter.values())
+        return total_number_of_timelines
+    return (exercise_7_2_find_number_of_timelines,)
 
 
 @app.cell
-def _(example_tachyon_manifold):
+def _(example_tachyon_manifold, exercise_7_2_find_number_of_timelines):
     solution_example_7_2 = exercise_7_2_find_number_of_timelines(tachyon_manifold=example_tachyon_manifold)
 
     assert solution_example_7_2 == 40
@@ -2291,7 +2295,7 @@ def _(example_tachyon_manifold):
 
 
 @app.cell
-def _(tachyon_manifold):
+def _(exercise_7_2_find_number_of_timelines, tachyon_manifold):
     print(exercise_7_2_find_number_of_timelines(tachyon_manifold=tachyon_manifold))
     return
 
