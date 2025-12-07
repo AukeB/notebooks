@@ -2436,18 +2436,31 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
-def _():
-    return
+@app.function(hide_code=True)
+def exercise_8_1(
+    data: list[str]
+) -> int:
+    """ """
+    pass
 
 
 @app.cell(hide_code=True)
 def _():
-    return
+    example_data_8 = [
+        "",
+    ]
+
+    solution_example_8_1 = exercise_8_1(data=example_data_8)
+
+    assert solution_example_8_1 == None
+    return (example_data_8,)
 
 
 @app.cell(hide_code=True)
 def _():
+    # data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_8.txt", separator="\n")
+
+    # print(exercise_8_1(data=data))
     return
 
 
@@ -2472,27 +2485,129 @@ def _(mo):
     return
 
 
+@app.function(hide_code=True)
+def exercise_8_2(
+    data: list[str]
+) -> int:
+    """ """
+    pass
+
+
 @app.cell(hide_code=True)
-def _():
+def _(example_data_8):
+    solution_example_8_2 = exercise_8_2(data=example_data_8)
+
+    assert solution_example_8_2 == None
     return
 
 
 @app.cell(hide_code=True)
 def _():
+    # print(exercise_8_2(data=data))
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ## Day 9
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Instructions
+    """)
+    return
+
+
+@app.cell
 def _():
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Solution
+    """)
+    return
+
+
+@app.function
+def exercise_9_1(
+    data: list[str]
+) -> int:
+    """ """
+    pass
+
+
+@app.cell
+def _():
+    example_data_9 = [
+        "",
+    ]
+
+    solution_example_9_1 = exercise_9_1(data=example_data_9)
+
+    assert solution_example_9_1 == None
+    return (example_data_9,)
+
+
+@app.cell
+def _():
+    # data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_9.txt", separator="\n")
+
+    # print(exercise_9_1(data=data))
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Instructions
+    """)
+    return
+
+
+@app.cell
 def _():
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Solution
+    """)
+    return
+
+
+@app.function
+def exercise_9_2(
+    data: list[str]
+) -> int:
+    """ """
+    pass
+
+
+@app.cell
+def _(example_data_9):
+    solution_example_9_2 = exercise_9_2(data=example_data_9)
+
+    assert solution_example_9_2 == None
+    return
+
+
+@app.cell
+def _():
+    # print(exercise_9_2(data=data))
+    return
+
+
+@app.cell
 def _():
     return
 
