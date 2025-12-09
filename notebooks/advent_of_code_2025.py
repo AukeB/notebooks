@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.3"
+__generated_with = "0.18.1"
 app = marimo.App(width="medium", auto_download=["ipynb"])
 
 
@@ -39,7 +39,7 @@ def _(mo):
 @app.cell
 def _():
     DATA_DIRECTORY_PATH = "data/aoc_2025"
-    DATA_DIRECTORY_PATH = "../" + DATA_DIRECTORY_PATH
+    # DATA_DIRECTORY_PATH = "../" + DATA_DIRECTORY_PATH
     return (DATA_DIRECTORY_PATH,)
 
 
@@ -163,37 +163,32 @@ def exercise_1_1_find_exact_zeros(
     start_position: int = 50,
 ) -> int:
     """
-    Calculates the number of times the dial points at 0 after processing a sequence of rotations.
+    Simulate safe dial rotations and count how many times the dial lands on zero.
 
-    This function simulates the movement of a circular dial, which starts at a given position (default is 50), 
-    and is rotated based on a list of rotation instructions. Each rotation instruction specifies a direction 
-    ('L' for left, 'R' for right) and a distance (number of clicks). The dial wraps around if it exceeds 
-    the range of 0 to 99. The function counts how many times the dial points at 0 during the sequence of rotations.
+    The dial is rotated one click at a time. It wraps around from 99 to 0 and
+    from 0 to 99. The count increases each time the dial ends a rotation
+    pointing at zero.
 
     Args:
-        rotation_data (list[str]): A list of rotation instructions in the format 'L<number>' or 'R<number>'.
-        start_position (int, optional): The starting position of the dial. Defaults to 50.
+        rotation_data (list[str]): List of rotation instructions, each starting with 'L'
+            or 'R' followed by an integer number of clicks.
+        start_position (int): Starting value on the dial, between 0 and 99. Defaults
+            to 50.
 
     Returns:
-        int: The number of times the dial points at 0 after processing all rotations.
+        int: The number of times the dial ends a rotation pointing at zero.
     """
-    end_position = start_position
+    current_position = start_position
     zero_counter = 0
 
-    for i in range(len(rotation_data)):
-        rotation_value = int(rotation_data[i][1:])
+    for rotation in rotation_data:
+        step = 1 if rotation[0] == "R" else -1
+        number_of_steps = int(rotation[1:])
 
-        if rotation_data[i].startswith("L"):
-            end_position -= rotation_value
-        elif rotation_data[i].startswith("R"):
-            end_position += rotation_value
+        for _ in range(number_of_steps):
+            current_position = (current_position + step) % 100
 
-        while end_position > 99:
-            end_position -= 100
-        while end_position < 0:
-            end_position += 100
-
-        if end_position == 0:
+        if not current_position:
             zero_counter += 1
 
     return zero_counter
@@ -270,56 +265,47 @@ def _(mo):
 
 
 @app.function
-def exercise_2_1_find_zero_pointings(
+def exercise_1_2_count_zero_clicks(
     rotation_data: list[str],
-    start_position: int = 50
+    start_position: int = 50,
 ) -> int:
     """
-    Calculates the total number of times the dial points at 0 during and after rotations.
+    Count how many times the dial points at zero during the given rotations.
 
-    This function simulates the movement of a circular dial, which starts at a given position 
-    (default is 50), and is rotated based on a list of rotation instructions. Each rotation 
-    instruction specifies a direction ('L' for left, 'R' for right) and a distance (number of clicks). 
-    The dial wraps around if it exceeds the range of 0 to 99. The function counts how many times the 
-    dial points at 0 either during a rotation or at the end of a rotation.
+    The dial moves one click at a time. Each instruction starts with 'L' or 'R'
+    followed by an integer indicating how many clicks to rotate. The dial wraps
+    from 99 to 0 and from 0 to 99. The counter increases every time a single
+    click causes the dial to land on zero.
 
     Args:
-        rotation_data (list[str]): A list of rotation instructions in the format 'L<number>' or 'R<number>'.
-        start_position (int, optional): The starting position of the dial. Defaults to 50.
+        rotation_data (list[str]): List of rotation instructions as strings. Each has a
+            direction character ('L' or 'R') followed by an integer number of
+            clicks.
+        start_position (int): Starting value on the dial, between 0 and 99. Defaults
+            to 50.
 
     Returns:
-        int: The total number of times the dial points at 0 during and after processing all rotations.
+        int: The total number of times any click causes the dial to land on zero.
     """
-    end_position = start_position
+    current_position = start_position
     zero_counter = 0
 
-    for i in range(len(rotation_data)):
-        rotation_value = int(rotation_data[i][1:])
+    for rotation in rotation_data:
+        step = 1 if rotation[0] == "R" else -1
+        number_of_steps = int(rotation[1:])
 
-        if rotation_data[i].startswith("L"):
-            for _ in range(rotation_value):
-                end_position -= 1
+        for _ in range(number_of_steps):
+            current_position = (current_position + step) % 100
 
-                if end_position < 0:
-                    end_position += 100
-                if end_position == 0:
-                    zero_counter += 1
-
-        elif rotation_data[i].startswith("R"):
-            for _ in range(rotation_value):
-                end_position += 1
-
-                if end_position > 99:
-                    end_position -= 100
-                if end_position == 0:
-                    zero_counter += 1
+            if not current_position:
+                zero_counter += 1
 
     return zero_counter
 
 
 @app.cell
 def _(example_rotation_data):
-    solution_example_1_2 = (exercise_2_1_find_zero_pointings(rotation_data=example_rotation_data))
+    solution_example_1_2 = (exercise_1_2_count_zero_clicks(rotation_data=example_rotation_data))
 
     assert solution_example_1_2 == 6
     return
@@ -327,7 +313,7 @@ def _(example_rotation_data):
 
 @app.cell
 def _(rotation_data):
-    print(exercise_2_1_find_zero_pointings(rotation_data=rotation_data))
+    print(exercise_1_2_count_zero_clicks(rotation_data=rotation_data))
     return
 
 
@@ -2410,7 +2396,7 @@ def _():
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Day 8
+    ## Day 8 - Playground
     """)
     return
 
@@ -2424,7 +2410,61 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _():
+def _(mo):
+    mo.md(r"""
+    Equipped with a new understanding of teleporter maintenance, you confidently step onto the repaired teleporter pad.
+
+    You rematerialize on an unfamiliar teleporter pad and find yourself in a vast underground space which contains a giant playground!
+
+    Across the playground, a group of Elves are working on setting up an ambitious Christmas decoration project. Through careful rigging, they have suspended a large number of small electrical junction boxes.
+
+    Their plan is to connect the junction boxes with long strings of lights. Most of the junction boxes don't provide electricity; however, when two junction boxes are connected by a string of lights, electricity can pass between those two junction boxes.
+
+    The Elves are trying to figure out which junction boxes to connect so that electricity can reach every junction box. They even have a list of all of the junction boxes' positions in 3D space (your puzzle input).
+
+    For example:
+
+    ```
+    162,817,812
+    57,618,57
+    906,360,560
+    592,479,940
+    352,342,300
+    466,668,158
+    542,29,236
+    431,825,988
+    739,650,466
+    52,470,668
+    216,146,977
+    819,987,18
+    117,168,530
+    805,96,715
+    346,949,466
+    970,615,88
+    941,993,340
+    862,61,35
+    984,92,344
+    425,690,689
+    ```
+
+    This list describes the position of 20 junction boxes, one per line. Each position is given as X,Y,Z coordinates. So, the first junction box in the list is at X=162, Y=817, Z=812.
+
+    To save on string lights, the Elves would like to focus on connecting pairs of junction boxes that are as close together as possible according to straight-line distance. In this example, the two junction boxes which are closest together are 162,817,812 and 425,690,689.
+
+    By connecting these two junction boxes together, because electricity can flow between them, they become part of the same circuit. After connecting them, there is a single circuit which contains two junction boxes, and the remaining 18 junction boxes remain in their own individual circuits.
+
+    Now, the two junction boxes which are closest together but aren't already directly connected are 162,817,812 and 431,825,988. After connecting them, since 162,817,812 is already connected to another junction box, there is now a single circuit which contains three junction boxes and an additional 17 circuits which contain one junction box each.
+
+    The next two junction boxes to connect are 906,360,560 and 805,96,715. After connecting them, there is a circuit containing 3 junction boxes, a circuit containing 2 junction boxes, and 15 circuits which contain one junction box each.
+
+    The next two junction boxes are 431,825,988 and 425,690,689. Because these two junction boxes were already in the same circuit, nothing happens!
+
+    This process continues for a while, and the Elves are concerned that they don't have enough extension cables for all these circuits. They would like to know how big the circuits will be.
+
+    After making the ten shortest connections, there are 11 circuits: one circuit which contains 5 junction boxes, one circuit which contains 4 junction boxes, two circuits which contain 2 junction boxes each, and seven circuits which each contain a single junction box. Multiplying together the sizes of the three largest circuits (5, 4, and one of the circuits of size 2) produces 40.
+
+    Your list contains many junction boxes; connect together the 1000 pairs of junction boxes which are closest together. Afterward, what do you get if you multiply together the sizes of the three largest circuits?
+    """)
     return
 
 
@@ -2436,31 +2476,41 @@ def _(mo):
     return
 
 
-@app.function(hide_code=True)
-def exercise_8_1(
-    data: list[str]
-) -> int:
-    """ """
-    pass
-
-
-@app.cell(hide_code=True)
+@app.cell
 def _():
-    example_data_8 = [
-        "",
+    return
+
+
+@app.cell
+def _():
+    example_junction_positions = [
+        "162,817,812",
+        "57,618,57",
+        "906,360,560",
+        "592,479,940",
+        "352,342,300",
+        "466,668,158",
+        "542,29,236",
+        "431,825,988",
+        "739,650,466",
+        "52,470,668",
+        "216,146,977",
+        "819,987,18",
+        "117,168,530",
+        "805,96,715",
+        "346,949,466",
+        "970,615,88",
+        "941,993,340",
+        "862,61,35",
+        "984,92,344",
+        "425,690,689",
     ]
-
-    solution_example_8_1 = exercise_8_1(data=example_data_8)
-
-    assert solution_example_8_1 == None
-    return (example_data_8,)
+    return
 
 
-@app.cell(hide_code=True)
-def _():
-    # data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_8.txt", separator="\n")
-
-    # print(exercise_8_1(data=data))
+@app.cell
+def _(DATA_DIRECTORY_PATH):
+    junction_positions = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_8.txt", separator="\n")
     return
 
 
@@ -2473,7 +2523,14 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _():
+def _(mo):
+    mo.md(r"""
+    The Elves were right; they definitely don't have enough extension cables. You'll need to keep connecting junction boxes together until they're all in one large circuit.
+
+    Continuing the above example, the first connection which causes all of the junction boxes to form a single circuit is between the junction boxes at 216,146,977 and 117,168,530. The Elves need to know how far those junction boxes are from the wall so they can pick the right extension cable; multiplying the X coordinates of those two junction boxes (216 and 117) produces 25272.
+
+    Continue connecting the closest unconnected pairs of junction boxes together until they're all in the same circuit. What do you get if you multiply together the X coordinates of the last two junction boxes you need to connect?
+    """)
     return
 
 
@@ -2485,37 +2542,20 @@ def _(mo):
     return
 
 
-@app.function(hide_code=True)
-def exercise_8_2(
-    data: list[str]
-) -> int:
-    """ """
-    pass
-
-
-@app.cell(hide_code=True)
-def _(example_data_8):
-    solution_example_8_2 = exercise_8_2(data=example_data_8)
-
-    assert solution_example_8_2 == None
-    return
-
-
 @app.cell(hide_code=True)
 def _():
-    # print(exercise_8_2(data=data))
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Day 9
+    ## Day 9 - Movie Theater
     """)
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     ### Part 1 - Instructions
@@ -2523,12 +2563,104 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    You slide down the firepole in the corner of the playground and land in the North Pole base movie theater!
+
+    The movie theater has a big tile floor with an interesting pattern. Elves here are redecorating the theater by switching out some of the square tiles in the big grid they form. Some of the tiles are red; the Elves would like to find the largest rectangle that uses red tiles for two of its opposite corners. They even have a list of where the red tiles are located in the grid (your puzzle input).
+
+    For example:
+
+    ```
+    7,1
+    11,1
+    11,7
+    9,7
+    9,5
+    2,5
+    2,3
+    7,3
+    ```
+
+    Showing red tiles as # and other tiles as ., the above arrangement of red tiles would look like this:
+
+    ```
+    ..............
+    .......#...#..
+    ..............
+    ..#....#......
+    ..............
+    ..#......#....
+    ..............
+    .........#.#..
+    ..............
+    ```
+
+    You can choose any two red tiles as the opposite corners of your rectangle; your goal is to find the largest rectangle possible.
+
+    For example, you could make a rectangle (shown as O) with an area of 24 between 2,5 and 9,7:
+
+    ```
+    ..............
+    .......#...#..
+    ..............
+    ..#....#......
+    ..............
+    ..OOOOOOOO....
+    ..OOOOOOOO....
+    ..OOOOOOOO.#..
+    ..............
+    ```
+
+    Or, you could make a rectangle with area 35 between 7,1 and 11,7:
+
+    ```
+    ..............
+    .......OOOOO..
+    .......OOOOO..
+    ..#....OOOOO..
+    .......OOOOO..
+    ..#....OOOOO..
+    .......OOOOO..
+    .......OOOOO..
+    ..............
+    ```
+
+    You could even make a thin rectangle with an area of only 6 between 7,3 and 2,3:
+
+    ```
+    ..............
+    .......#...#..
+    ..............
+    ..OOOOOO......
+    ..............
+    ..#......#....
+    ..............
+    .........#.#..
+    ..............
+    ```
+
+    Ultimately, the largest rectangle you can make in this example has area 50. One way to do this is between 2,5 and 11,1:
+
+    ```
+    ..............
+    ..OOOOOOOOOO..
+    ..OOOOOOOOOO..
+    ..OOOOOOOOOO..
+    ..OOOOOOOOOO..
+    ..OOOOOOOOOO..
+    ..............
+    .........#.#..
+    ..............
+    ```
+
+    Using two red tiles as opposite corners, what is the largest area of any rectangle you can make?
+    """)
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     ### Part 1 - Solution
@@ -2537,34 +2669,69 @@ def _(mo):
 
 
 @app.function
-def exercise_9_1(
-    data: list[str]
+def exercise_9_1_find_largest_rectangle(
+    red_tile_coordinates: list[str]
 ) -> int:
-    """ """
-    pass
+    """
+    Find the largest possible rectangle area formed by any two red tiles as opposite corners.
 
+    Each coordinate is given as a string "x,y". Two tiles define a rectangle whose area is
+    computed as (abs(x1 - x2) + 1) * (abs(y1 - y2) + 1). All unique tile pairs are evaluated,
+    and the largest resulting rectangle area is returned.
 
-@app.cell
-def _():
-    example_data_9 = [
-        "",
+    Args:
+        red_tile_coordinates (list[str]): List of red tile positions as "x,y" strings.
+
+    Returns:
+        int: The largest rectangle area formed by any pair of red tiles.
+    """
+    red_tile_coordinates = [
+        [int(num) for num in row.split(",")] for row in red_tile_coordinates
     ]
 
-    solution_example_9_1 = exercise_9_1(data=example_data_9)
+    largest_area = 0
 
-    assert solution_example_9_1 == None
-    return (example_data_9,)
+    for i in range(len(red_tile_coordinates)):
+        for j in range(i):
+            c1 = red_tile_coordinates[i]
+            c2 = red_tile_coordinates[j]
+
+            rectangle_area = (1 + abs(c1[0]-c2[0])) * (1 + abs(c1[1]-c2[1]))
+
+            if rectangle_area > largest_area:
+                largest_area = rectangle_area
+
+    return largest_area
 
 
 @app.cell
 def _():
-    # data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_9.txt", separator="\n")
+    example_red_tile_coordinates = [
+        "7,1",
+        "11,1",
+        "11,7",
+        "9,7",
+        "9,5",
+        "2,5",
+        "2,3",
+        "7,3",
+    ]
 
-    # print(exercise_9_1(data=data))
+    solution_example_9_1 = exercise_9_1_find_largest_rectangle(red_tile_coordinates=example_red_tile_coordinates)
+
+    assert solution_example_9_1 == 50
     return
 
 
 @app.cell
+def _(DATA_DIRECTORY_PATH):
+    red_tile_coordinates = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_9.txt", separator="\n")
+
+    print(exercise_9_1_find_largest_rectangle(red_tile_coordinates=red_tile_coordinates))
+    return
+
+
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     ### Part 2 - Instructions
@@ -2572,12 +2739,93 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The Elves just remembered: they can only switch out tiles that are red or green. So, your rectangle can only include red or green tiles.
+
+    In your list, every red tile is connected to the red tile before and after it by a straight line of green tiles. The list wraps, so the first red tile is also connected to the last red tile. Tiles that are adjacent in your list will always be on either the same row or the same column.
+
+    Using the same example as before, the tiles marked X would be green:
+
+    ```
+    ..............
+    .......#XXX#..
+    .......X...X..
+    ..#XXXX#...X..
+    ..X........X..
+    ..#XXXXXX#.X..
+    .........X.X..
+    .........#X#..
+    ..............
+    ```
+
+    In addition, all of the tiles inside this loop of red and green tiles are also green. So, in this example, these are the green tiles:
+
+    ```
+    ..............
+    .......#XXX#..
+    .......XXXXX..
+    ..#XXXX#XXXX..
+    ..XXXXXXXXXX..
+    ..#XXXXXX#XX..
+    .........XXX..
+    .........#X#..
+    ..............
+    ```
+
+    The remaining tiles are never red nor green.
+
+    The rectangle you choose still must have red tiles in opposite corners, but any other tiles it includes must now be red or green. This significantly limits your options.
+
+    For example, you could make a rectangle out of red and green tiles with an area of 15 between 7,3 and 11,1:
+
+    ```
+    ..............
+    .......OOOOO..
+    .......OOOOO..
+    ..#XXXXOOOOO..
+    ..XXXXXXXXXX..
+    ..#XXXXXX#XX..
+    .........XXX..
+    .........#X#..
+    ..............
+    ```
+
+    Or, you could make a thin rectangle with an area of 3 between 9,7 and 9,5:
+
+    ```
+    ..............
+    .......#XXX#..
+    .......XXXXX..
+    ..#XXXX#XXXX..
+    ..XXXXXXXXXX..
+    ..#XXXXXXOXX..
+    .........OXX..
+    .........OX#..
+    ..............
+    ```
+
+    The largest rectangle you can make in this example using only red and green tiles has area 24. One way to do this is between 9,5 and 2,3:
+
+    ```
+    ..............
+    .......#XXX#..
+    .......XXXXX..
+    ..OOOOOOOOXX..
+    ..OOOOOOOOXX..
+    ..OOOOOOOOXX..
+    .........XXX..
+    .........#X#..
+    ..............
+    ```
+
+    Using two red tiles as opposite corners, what is the largest area of any rectangle you can make using only red and green tiles?
+    """)
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     ### Part 2 - Solution
@@ -2585,29 +2833,7 @@ def _(mo):
     return
 
 
-@app.function
-def exercise_9_2(
-    data: list[str]
-) -> int:
-    """ """
-    pass
-
-
-@app.cell
-def _(example_data_9):
-    solution_example_9_2 = exercise_9_2(data=example_data_9)
-
-    assert solution_example_9_2 == None
-    return
-
-
-@app.cell
-def _():
-    # print(exercise_9_2(data=data))
-    return
-
-
-@app.cell
+@app.cell(hide_code=True)
 def _():
     return
 

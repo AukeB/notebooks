@@ -110,3 +110,6 @@ Desktop.ini
 bitmaps/.~lock*
 bitmaps/.~lock.*#
 **/readme.todo
+
+# Specific files
+notebooks/advent_of_code_2025_dev.py
