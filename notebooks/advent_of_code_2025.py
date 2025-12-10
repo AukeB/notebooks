@@ -15,7 +15,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Imports
+    ## Generic imports
     """)
     return
 
@@ -3117,7 +3117,7 @@ def _(
 
     assert solution_example_10_1 == 7
     assert solution_example_10_1_v2 == 7
-    return
+    return (example_manual,)
 
 
 @app.cell
@@ -3131,7 +3131,7 @@ def _(
 
     assert exercise_10_1_find_minimal_button_presses(manual=manual) == 578
     assert exercise_10_1_find_minimal_button_presses_binary_approach(manual=manual) == 578
-    return
+    return (manual,)
 
 
 @app.cell(hide_code=True)
@@ -3189,21 +3189,108 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(convert_string_to_list_of_tuples):
+    import pulp
+
+    def exercise_10_2_find_minimal_button_presses(
+        manual: list[str]
+    ) -> int:
+        """
+        Compute the minimal total number of button presses to reach target states for all 
+        machines in the manual using integer linear programming.
+
+        Each machine description must include:
+        1. Indicator light diagram (e.g., '[#..#]') where '#' indicates a target light.
+        2. Button wiring schematic (e.g., '(0,1) (2,3)') showing which lights each button 
+           affects.
+        3. Target joltage levels (e.g., '1,0,1,0') representing the desired state of each 
+           light.
+
+        The function uses PuLP's CBC solver to determine the minimal number of presses per 
+        machine and sums them for all machines.
+
+        For each machine:
+          - Parse the description to extract lights, buttons, and target states.
+          - Build a coefficient matrix where matrix[i][j] = 1 if button j affects light i.
+          - Define integer variables for button presses.
+          - Minimize the sum of button presses while satisfying the target state constraints.
+          - Solve the ILP with CBC.
+          - Accumulate the total minimal presses.
+
+        Args:
+            manual (list[str]): List of machine descriptions as strings.
+
+        Returns:
+            int: Total minimal number of button presses required across all machines.
+        """
+
+        total_button_press_counter: int = 0
+
+        for machine_description in manual:
+            # Get indices.
+            index_square_bracket_closing: int = machine_description.index("]")
+            index_parenthesis_closing: int = machine_description.rindex(")")
+
+            # Separate machine properties.
+            indicator_light_diagram: str = machine_description[1:index_square_bracket_closing]
+            button_wiring_schematic: str = machine_description[index_square_bracket_closing + 2:index_parenthesis_closing + 1]
+            joltage_requirements: str = machine_description[index_parenthesis_closing + 3:-1]
+
+            # Additional setup variables.
+            number_of_lights: int = len(indicator_light_diagram)
+            buttons: list[tuple[int]] = convert_string_to_list_of_tuples(str_data=button_wiring_schematic)
+            number_of_buttons: int = len(buttons)
+            target_joltage_levels: tuple = tuple(int(level) for level in joltage_requirements.split(","))
+
+            # Setup a coefficient matrix and fill it with the effect all the buttons have on the light indicators.
+            coefficient_matrix = [[0] * number_of_buttons for _ in range(number_of_lights)]
+            for col_index in range(len(coefficient_matrix[0])):
+                for row_index in range(len(coefficient_matrix)):
+                    coefficient_matrix[row_index][col_index] = 1 if row_index in buttons[col_index] else 0
+
+            # Build the PuLP linear programming model.
+            problem = pulp.LpProblem(
+                name="MinimalButtonPresses",
+                sense=pulp.LpMinimize # Minimization is objective.
+            )
+
+            # Setup up variables.
+            variables = [
+                pulp.LpVariable(name=f"x_{j}", lowBound=0, upBound=None, cat="Integer")
+                for j in range(number_of_buttons)
+            ]
+
+            problem += pulp.lpSum(vector=variables) # Minimize the total number of presses
+
+            # Setup constraints.
+            for light_index in range(number_of_lights):
+                problem += pulp.lpSum(
+                    coefficient_matrix[light_index][button_index] * variables[button_index]
+                    for button_index in range(number_of_buttons)
+                ) == target_joltage_levels[light_index]
+
+            # The problem is ready to be solved now.
+            problem.solve(solver=pulp.PULP_CBC_CMD(msg=False))
+
+            # Obtain results
+            solution = [int(pulp.value(variable)) for variable in variables]
+            total_button_press_counter += sum(solution)
+
+        return total_button_press_counter
+    return (exercise_10_2_find_minimal_button_presses,)
+
+
+@app.cell
+def _(example_manual, exercise_10_2_find_minimal_button_presses):
+    solution_example_10_2 = exercise_10_2_find_minimal_button_presses(manual=example_manual)
+
+    assert solution_example_10_2 == 33
     return
 
 
 @app.cell
-def _():
-    # solution_example_10_2 = exercise_10_2_find_minimal_button_presses(manual=example_manual)
-
-    # assert solution_example_10_2 == 33
-    return
-
-
-@app.cell
-def _():
-    # print(exercise_10_2_find_minimal_button_presses(manual=manual))
+def _(exercise_10_2_find_minimal_button_presses, manual):
+    print(exercise_10_2_find_minimal_button_presses(manual=manual))
     return
 
 
