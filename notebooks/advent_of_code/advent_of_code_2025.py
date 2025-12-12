@@ -3486,7 +3486,7 @@ def exercise_11_2_find_all_device_paths(
 
     Returns:
         int: The total number of distinct paths from `start_device_name` to 
-        `end_device_name` that pass through all devices in `mid_device_names`.
+            `end_device_name` that pass through all devices in `mid_device_names`.
     """
     device_mapping = {}
 
