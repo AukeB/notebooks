@@ -3311,9 +3311,65 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
-def _():
-    return
+@app.function
+def exercise_11_1_find_all_device_paths(
+    list_of_devices: list[str],
+    start_device_name: str = "you",
+    end_device_name: str = "out"
+) -> int:
+    """
+    Count all directed paths from a start device to an end device.
+
+    The input defines a directed graph where each line maps a device to its
+    output devices. The function builds the graph and uses a memoized DFS to
+    count all unique paths from the start device to the end device.
+
+    Args:
+        list_of_devices (list[str]): Lines describing device connections.
+        start_device_name (str): Device where traversal begins.
+        end_device_name (str): Target device for path counting.
+
+    Returns:
+        int: Number of distinct paths from start to end.
+    """
+    device_mapping = {}
+    
+    for device in list_of_devices:
+        device_name, device_output = device.split(":")
+        device_output = device_output.strip().split(" ")
+        device_mapping[device_name] = device_output
+
+    number_of_paths = {}
+    
+    def find_number_of_paths(
+        node: str
+    ) -> int:
+        """
+        Return the number of paths from the given node to the end device.
+
+        Results are cached to avoid recomputing path counts for nodes that
+        have already been processed.
+
+        Args:
+            node (str): The current device being explored.
+
+        Returns:
+            int: Number of paths from this node to the end device.
+        """
+        if node in number_of_paths:
+            return number_of_paths[node]
+        
+        if node == end_device_name:
+            return 1
+
+        number_of_paths[node] = sum(
+            find_number_of_paths(next_node)
+            for next_node in device_mapping[node]
+        )
+
+        return number_of_paths[node]
+
+    return find_number_of_paths(node=start_device_name)
 
 
 @app.cell
@@ -3331,9 +3387,9 @@ def _():
         "iii: out"
     ]
 
-    # solution_example_11_1 = exercise_11_1_find_all_device_paths(list_of_devices=example_list_of_devices_part_1)
+    solution_example_11_1 = exercise_11_1_find_all_device_paths(list_of_devices=example_list_of_devices_part_1)
 
-    # print(solution_example_11_1)
+    assert solution_example_11_1 == 5
     return
 
 
@@ -3341,7 +3397,7 @@ def _():
 def _(DATA_DIRECTORY_PATH, read_data):
     list_of_devices = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_11.txt", separator="\n")
 
-    # print(exercise_11_1_find_all_device_paths(list_of_devices=list_of_devices))
+    print(exercise_11_1_find_all_device_paths(list_of_devices=list_of_devices))
     return
 
 
