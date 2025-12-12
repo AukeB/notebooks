@@ -15,7 +15,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Generic imports
+    ## Imports
     """)
     return
 
@@ -76,7 +76,7 @@ def _():
     def convert_string_to_list_of_tuples(str_data: str) -> list[tuple[int]]:
         """
         Convert a string representation of tuples into a list of integer tuples.
-    
+
         Each tuple in the string should be enclosed in parentheses and separated
         by spaces. Elements within a tuple should be comma-separated integers.
 
@@ -3021,7 +3021,7 @@ def _(convert_string_to_list_of_tuples):
                         button_press_counter += 1
 
                 final_state = [index for index, indicator in enumerate(current_state) if indicator]
-            
+
                 if target_state == final_state and button_press_counter < minimal_number_of_button_presses:
                     minimal_number_of_button_presses = button_press_counter
 
@@ -3094,7 +3094,7 @@ def _(convert_string_to_list_of_tuples):
                 final_state = [index for index, indicator in enumerate(current_state) if indicator]
                 if target_state == final_state:
                     minimal_number_of_button_presses = min(button_press_counter, minimal_number_of_button_presses)
-        
+
             total_button_press_counter += minimal_number_of_button_presses
 
         return total_button_press_counter
@@ -3291,6 +3291,361 @@ def _(example_manual, exercise_10_2_find_minimal_button_presses):
 @app.cell
 def _(exercise_10_2_find_minimal_button_presses, manual):
     print(exercise_10_2_find_minimal_button_presses(manual=manual))
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Day 11 - Reactor
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Instructions
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ou hear some loud beeping coming from a hatch in the floor of the factory, so you decide to check it out. Inside, you find several large electrical conduits and a ladder.
+
+    Climbing down the ladder, you discover the source of the beeping: a large, toroidal reactor which powers the factory above. Some Elves here are hurriedly running between the reactor and a nearby server rack, apparently trying to fix something.
+
+    One of the Elves notices you and rushes over. "It's a good thing you're here! We just installed a new server rack, but we aren't having any luck getting the reactor to communicate with it!" You glance around the room and see a tangle of cables and devices running from the server rack to the reactor. She rushes off, returning a moment later with a list of the devices and their outputs (your puzzle input).
+
+    For example:
+
+    ```
+    aaa: you hhh
+    you: bbb ccc
+    bbb: ddd eee
+    ccc: ddd eee fff
+    ddd: ggg
+    eee: out
+    fff: out
+    ggg: out
+    hhh: ccc fff iii
+    iii: out
+    ```
+
+    Each line gives the name of a device followed by a list of the devices to which its outputs are attached. So, bbb: ddd eee means that device bbb has two outputs, one leading to device ddd and the other leading to device eee.
+
+    The Elves are pretty sure that the issue isn't due to any specific device, but rather that the issue is triggered by data following some specific path through the devices. Data only ever flows from a device through its outputs; it can't flow backwards.
+
+    After dividing up the work, the Elves would like you to focus on the devices starting with the one next to you (an Elf hastily attaches a label which just says you) and ending with the main output to the reactor (which is the device with the label out).
+
+    To help the Elves figure out which path is causing the issue, they need you to find every path from you to out.
+
+    In this example, these are all of the paths from you to out:
+
+    - Data could take the connection from you to bbb, then from bbb to ddd, then from ddd to ggg, then from ggg to out.
+    - Data could take the connection to bbb, then to eee, then to out.
+    - Data could go to ccc, then ddd, then ggg, then out.
+    - Data could go to ccc, then eee, then out.
+    - Data could go to ccc, then fff, then out.
+
+    In total, there are 5 different paths leading from you to out.
+
+    How many different paths lead from you to out?
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Solution
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    return
+
+
+@app.cell
+def _():
+    example_list_of_devices_part_1 = [
+        "aaa: you hhh",
+        "you: bbb ccc",
+        "bbb: ddd eee",
+        "ccc: ddd eee fff",
+        "ddd: ggg",
+        "eee: out",
+        "fff: out",
+        "ggg: out",
+        "hhh: ccc fff iii",
+        "iii: out"
+    ]
+
+    # solution_example_11_1 = exercise_11_1_find_all_device_paths(list_of_devices=example_list_of_devices_part_1)
+
+    # print(solution_example_11_1)
+    return
+
+
+@app.cell
+def _(DATA_DIRECTORY_PATH, read_data):
+    list_of_devices = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_11.txt", separator="\n")
+
+    # print(exercise_11_1_find_all_device_paths(list_of_devices=list_of_devices))
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Instructions
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Thanks in part to your analysis, the Elves have figured out a little bit about the issue. They now know that the problematic data path passes through both dac (a digital-to-analog converter) and fft (a device which performs a fast Fourier transform).
+
+    They're still not sure which specific path is the problem, and so they now need you to find every path from svr (the server rack) to out. However, the paths you find must all also visit both dac and fft (in any order).
+
+    For example:
+
+    ```
+    svr: aaa bbb
+    aaa: fft
+    fft: ccc
+    bbb: tty
+    tty: ccc
+    ccc: ddd eee
+    ddd: hub
+    hub: fff
+    eee: dac
+    dac: fff
+    fff: ggg hhh
+    ggg: out
+    hhh: out
+    ```
+
+    This new list of devices contains many paths from svr to out:
+
+    ```
+    svr,aaa,fft,ccc,ddd,hub,fff,ggg,out
+    svr,aaa,fft,ccc,ddd,hub,fff,hhh,out
+    svr,aaa,fft,ccc,eee,dac,fff,ggg,out
+    svr,aaa,fft,ccc,eee,dac,fff,hhh,out
+    svr,bbb,tty,ccc,ddd,hub,fff,ggg,out
+    svr,bbb,tty,ccc,ddd,hub,fff,hhh,out
+    svr,bbb,tty,ccc,eee,dac,fff,ggg,out
+    svr,bbb,tty,ccc,eee,dac,fff,hhh,out
+    ```
+
+    However, only 2 paths from svr to out visit both dac and fft.
+
+    Find all of the paths that lead from svr to out. How many of those paths visit both dac and fft?
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Solution
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    return
+
+
+@app.cell
+def _():
+    example_list_of_devices_part_2 = [
+        "svr: aaa bbb",
+        "aaa: fft",
+        "fft: ccc",
+        "bbb: tty",
+        "tty: ccc",
+        "ccc: ddd eee",
+        "ddd: hub",
+        "hub: fff",
+        "eee: dac",
+        "dac: fff",
+        "fff: ggg hhh",
+        "ggg: out",
+        "hhh: out",
+    ]
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Day 12 - Christmas Tree Farm
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Instructions
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    You're almost out of time, but there can't be much left to decorate. Although there are no stairs, elevators, escalators, tunnels, chutes, teleporters, firepoles, or conduits here that would take you deeper into the North Pole base, there is a ventilation duct. You jump in.
+
+    After bumping around for a few minutes, you emerge into a large, well-lit cavern full of Christmas trees!
+
+    There are a few Elves here frantically decorating before the deadline. They think they'll be able to finish most of the work, but the one thing they're worried about is the presents for all the young Elves that live here at the North Pole. It's an ancient tradition to put the presents under the trees, but the Elves are worried they won't fit.
+
+    The presents come in a few standard but very weird shapes. The shapes and the regions into which they need to fit are all measured in standard units. To be aesthetically pleasing, the presents need to be placed into the regions in a way that follows a standardized two-dimensional unit grid; you also can't stack presents.
+
+    As always, the Elves have a summary of the situation (your puzzle input) for you. First, it contains a list of the presents' shapes. Second, it contains the size of the region under each tree and a list of the number of presents of each shape that need to fit into that region. For example:
+
+    ```
+    0:
+    ###
+    ##.
+    ##.
+
+    1:
+    ###
+    ##.
+    .##
+
+    2:
+    .##
+    ###
+    ##.
+
+    3:
+    ##.
+    ###
+    ##.
+
+    4:
+    ###
+    #..
+    ###
+
+    5:
+    ###
+    .#.
+    ###
+
+    4x4: 0 0 0 0 2 0
+    12x5: 1 0 1 0 2 2
+    12x5: 1 0 1 0 3 2
+    ```
+
+    The first section lists the standard present shapes. For convenience, each shape starts with its index and a colon; then, the shape is displayed visually, where # is part of the shape and . is not.
+
+    The second section lists the regions under the trees. Each line starts with the width and length of the region; 12x5 means the region is 12 units wide and 5 units long. The rest of the line describes the presents that need to fit into that region by listing the quantity of each shape of present; 1 0 1 0 3 2 means you need to fit one present with shape index 0, no presents with shape index 1, one present with shape index 2, no presents with shape index 3, three presents with shape index 4, and two presents with shape index 5.
+
+    Presents can be rotated and flipped as necessary to make them fit in the available space, but they have to always be placed perfectly on the grid. Shapes can't overlap (that is, the # part from two different presents can't go in the same place on the grid), but they can fit together (that is, the . part in a present's shape's diagram does not block another present from occupying that space on the grid).
+
+    The Elves need to know how many of the regions can fit the presents listed. In the above example, there are six unique present shapes and three regions that need checking.
+
+    The first region is 4x4:
+
+    ```
+    ....
+    ....
+    ....
+    ....
+    ```
+
+    In it, you need to determine whether you could fit two presents that have shape index 4:
+
+    ```
+    ###
+    #..
+    ###
+    ```
+
+    After some experimentation, it turns out that you can fit both presents in this region. Here is one way to do it, using A to represent one present and B to represent the other:
+
+    ```
+    AAA.
+    ABAB
+    ABAB
+    .BBB
+    ```
+
+    The second region, 12x5: 1 0 1 0 2 2, is 12 units wide and 5 units long. In that region, you need to try to fit one present with shape index 0, one present with shape index 2, two presents with shape index 4, and two presents with shape index 5.
+
+    It turns out that these presents can all fit in this region. Here is one way to do it, again using different capital letters to represent all the required presents:
+
+    ```
+    ....AAAFFE.E
+    .BBBAAFFFEEE
+    DDDBAAFFCECE
+    DBBB....CCC.
+    DDD.....C.C.
+    ```
+
+    The third region, 12x5: 1 0 1 0 3 2, is the same size as the previous region; the only difference is that this region needs to fit one additional present with shape index 4. Unfortunately, no matter how hard you try, there is no way to fit all of the presents into this region.
+
+    So, in this example, 2 regions can fit all of their listed presents.
+
+    Consider the regions beneath each tree and the presents the Elves would like to fit into each of them. How many of the regions can fit all of the presents listed?
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Solution
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Instructions
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Solution
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
     return
 
 
