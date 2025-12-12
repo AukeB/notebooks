@@ -3496,7 +3496,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### Part 1 - Instructions
+    ### Instructions
     """)
     return
 
@@ -3608,43 +3608,153 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### Part 1 - Solution
+    ### Solution
     """)
     return
 
 
 @app.cell
-def _():
+def _(defaultdict):
+    def exercise_12_read_and_format_input_data(
+        present_and_region_data: list[str],
+        verbose: str = True
+    ) -> int:
+        """ """
+        # Related to the presents.
+        present_detected = False
+        present_index = None
+        present_shape = []
+        present_shapes = defaultdict(int)
+
+        # Related to the regions under the tree and number of presents that need to fit into that region.abs
+        region_detected = False
+        all_regions_and_quantities = []
+
+        # Important: The order of all the if-statement under the for-loop matters.
+        for row in present_and_region_data:
+            if present_detected:            
+                if row.strip() == "":
+                    present_shapes[present_index] = present_shape
+                    present_detected = False
+                else:
+                    present_shape.append(row)
+
+            if row.endswith(":"):
+                present_index = int(row[:-1])
+                present_detected = True
+                present_shape = []
+
+            if row and row[-1].isdigit():
+                region_detected = True
+
+            if region_detected:
+                region, raw_quantities = row.split(":")
+
+                region_schape = [int(dimension) for dimension in region.split("x")]
+                raw_quantities = [int(index) for index in raw_quantities.strip().split(" ")]
+
+                present_quantities = {}
+                for present_index, quantity in enumerate(raw_quantities):
+                    present_quantities[present_index] = quantity
+
+                regions_and_quantities = {}
+                regions_and_quantities["region_shape"] = region_schape
+                regions_and_quantities["present_quantities"] = present_quantities
+
+                all_regions_and_quantities.append(regions_and_quantities)
+
+        if verbose:
+            print("Presents:")
+            for k, v in present_shapes.items():
+                print(k, v)
+            print("\nChristmas tree regions and present indices:")
+            for x in all_regions_and_quantities:
+                print(x)
+
+        return present_shapes, all_regions_and_quantities
+    return (exercise_12_read_and_format_input_data,)
+
+
+@app.cell
+def _(Dict, List):
+    def exercise_12_1_find_number_of_fitting_presents(
+        present_shapes: Dict[int, List[str]],
+        regions_and_quantities: List[Dict[str, object]]
+    ) -> int:
+        """ """
+        pass
     return
 
 
 @app.cell
-def _():
-    return
+def _(exercise_12_read_and_format_input_data):
+    example_present_and_region_data = [
+        "0:",
+        "###",
+        "##.",
+        "##.",
+        "",
+        "1:",
+        "###",
+        "##.",
+        ".##",
+        "",
+        "2:",
+        ".##",
+        "###",
+        "##.",
+        "",
+        "3:",
+        "##.",
+        "###",
+        "##.",
+        "",
+        "4:",
+        "###",
+        "#..",
+        "###",
+        "",
+        "5:",
+        "###",
+        ".#.",
+        "###",
+        "",
+        "4x4: 0 0 0 0 2 0",
+        "12x5: 1 0 1 0 2 2",
+        "12x5: 1 0 1 0 3 2"
+    ]
 
+    example_present_shapes, example_regions_and_quantities = exercise_12_read_and_format_input_data(
+        present_and_region_data=example_present_and_region_data,
+        verbose=True
+    )
 
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ### Part 2 - Instructions
-    """)
+    # solution_example_12_1 = exercise_12_1_find_number_of_fitting_presents(
+    #     present_shapes=example_present_shapes,
+    #     regions_and_quantities=example_regions_and_quantities
+    # )
+
+    # assert solution_example_12_1 == 2
     return
 
 
 @app.cell
-def _():
+def _(DATA_DIRECTORY_PATH, exercise_12_read_and_format_input_data, read_data):
+    present_and_region_data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_12.txt", separator="\n")
+
+    present_shapes, regions_and_quantities = exercise_12_read_and_format_input_data(
+        present_and_region_data=present_and_region_data,
+        verbose=False
+    )
+
+    # print(exercise_12_1_find_number_of_fitting_presents(
+    #     present_shapes=present_shapes,
+    #     regions_and_quantities=regions_and_quantities
+    # ))
     return
 
 
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ### Part 2 - Solution
-    """)
-    return
-
-
-@app.cell(hide_code=True)
+@app.cell
 def _():
     return
 
