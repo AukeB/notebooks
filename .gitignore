@@ -112,4 +112,4 @@ bitmaps/.~lock.*#
 **/readme.todo
 
 # Specific files
-notebooks/advent_of_code_2025_dev.py
+notebooks/advent_of_code/advent_of_code_2025_dev.py

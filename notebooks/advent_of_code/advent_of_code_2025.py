@@ -25,7 +25,9 @@ def _():
     import marimo as mo
 
     from collections import defaultdict
-    return defaultdict, mo
+
+    from advent_of_code_utils import read_data, convert_string_to_list_of_tuples
+    return convert_string_to_list_of_tuples, defaultdict, mo, read_data
 
 
 @app.cell(hide_code=True)
@@ -38,65 +40,9 @@ def _(mo):
 
 @app.cell
 def _():
-    DATA_DIRECTORY_PATH = "data/aoc_2025"
+    DATA_DIRECTORY_PATH = "data/advent_of_code"
     # DATA_DIRECTORY_PATH = "../" + DATA_DIRECTORY_PATH
     return (DATA_DIRECTORY_PATH,)
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ## Helper functions
-    """)
-    return
-
-
-@app.cell
-def _():
-    def read_data(file_path: str, separator: str) -> list[str]:
-        """
-        Reads a file and returns the content of the file as a list of str objects.
-        The separator determines how the file content is split: by commas or new lines.
-
-        Args:
-            file_path (str): The path to the file.
-            separator (str): The separator for splitting the file content.
-
-        Returns:
-            list[str]: A list of strings split based on the separator.
-        """
-        with open(file_path, "r") as file:
-            content = file.read().strip()
-            if separator == ",":
-                rotation_data = content.split(",")
-            elif separator == "\n":
-                rotation_data = content.split("\n")
-        return rotation_data
-
-    def convert_string_to_list_of_tuples(str_data: str) -> list[tuple[int]]:
-        """
-        Convert a string representation of tuples into a list of integer tuples.
-
-        Each tuple in the string should be enclosed in parentheses and separated
-        by spaces. Elements within a tuple should be comma-separated integers.
-
-        Args:
-            str_data (str): The str data representing one or more tuples.
-
-        Returns:
-            list[tuple[int]]: The same data but now with the correct variable
-                types.
-        """
-        list_of_tuples = []
-        data_split = str_data.split(" ")
-
-        for element in data_split:
-            sub_list_elements = element[1:-1].split(",")
-            sub_list_elements = [int(number) for number in sub_list_elements]
-            list_of_tuples.append(tuple(sub_list_elements))
-
-        return list_of_tuples
-    return convert_string_to_list_of_tuples, read_data
 
 
 @app.cell(hide_code=True)
@@ -232,7 +178,7 @@ def _():
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, read_data):
-    rotation_data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_1.txt", separator="\n")
+    rotation_data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_01.txt", separator="\n")
 
     print(exercise_1_1_find_exact_zeros(rotation_data=rotation_data))
     return (rotation_data,)
@@ -484,7 +430,7 @@ def _():
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, read_data):
-    product_id_ranges = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_2.txt", separator=",")
+    product_id_ranges = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_02.txt", separator=",")
 
     print(exercise_2_1_find_invalid_ids(product_id_ranges=product_id_ranges))
     return (product_id_ranges,)
@@ -733,7 +679,7 @@ def _():
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, read_data):
-    joltage_ratings = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_3.txt", separator="\n")
+    joltage_ratings = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_03.txt", separator="\n")
 
     print(exercise_3_1_find_largest_joltage(
        joltage_ratings=joltage_ratings
@@ -1024,7 +970,7 @@ def _():
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, read_data):
-    paper_roll_data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_4.txt", separator="\n")
+    paper_roll_data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_04.txt", separator="\n")
 
     print(exercise_4_1_find_accessible_paper_rolls(
         paper_roll_data=paper_roll_data
@@ -1436,7 +1382,7 @@ def _():
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, read_data):
-    ingredient_data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_5.txt", separator="\n")
+    ingredient_data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_05.txt", separator="\n")
 
     print(exercise_5_1_identify_fresh_ingredients(
         ingredient_data=ingredient_data
@@ -1750,7 +1696,7 @@ def _():
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, read_data):
-    math_homework = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_6.txt", separator="\n")
+    math_homework = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_06.txt", separator="\n")
 
     print(exercise_6_1_help_with_math_homework(math_homework=math_homework))
     return (math_homework,)
@@ -2154,7 +2100,7 @@ def _():
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, read_data):
-    tachyon_manifold = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_7.txt", separator="\n")
+    tachyon_manifold = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_07.txt", separator="\n")
 
     print(exercise_7_1_find_number_of_beam_splits(tachyon_manifold=tachyon_manifold))
     return (tachyon_manifold,)
@@ -2536,7 +2482,7 @@ def _():
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, read_data):
-    junction_positions = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_8.txt", separator="\n")
+    junction_positions = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_08.txt", separator="\n")
     return
 
 
@@ -2751,7 +2697,7 @@ def _():
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, read_data):
-    red_tile_coordinates = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_9.txt", separator="\n")
+    red_tile_coordinates = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_09.txt", separator="\n")
 
     print(exercise_9_1_find_largest_rectangle(red_tile_coordinates=red_tile_coordinates))
     return
@@ -3127,7 +3073,7 @@ def _(
     exercise_10_1_find_minimal_button_presses_binary_approach,
     read_data,
 ):
-    manual = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_10.txt", separator="\n")
+    manual = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_10.txt", separator="\n")
 
     assert exercise_10_1_find_minimal_button_presses(manual=manual) == 578
     assert exercise_10_1_find_minimal_button_presses_binary_approach(manual=manual) == 578
@@ -3393,7 +3339,7 @@ def _():
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, read_data):
-    list_of_devices = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_11.txt", separator="\n")
+    list_of_devices = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_11.txt", separator="\n")
 
     # print(exercise_11_1_find_all_device_paths(list_of_devices=list_of_devices))
     return
@@ -3675,15 +3621,13 @@ def _(defaultdict):
     return (exercise_12_read_and_format_input_data,)
 
 
-@app.cell
-def _(Dict, List):
-    def exercise_12_1_find_number_of_fitting_presents(
-        present_shapes: Dict[int, List[str]],
-        regions_and_quantities: List[Dict[str, object]]
-    ) -> int:
-        """ """
-        pass
-    return
+@app.function
+def exercise_12_1_find_number_of_fitting_presents(
+    present_shapes: dict[int, list[str]],
+    regions_and_quantities: list[dict[str, object]]
+) -> int:
+    """ """
+    pass
 
 
 @app.cell
@@ -3740,7 +3684,7 @@ def _(exercise_12_read_and_format_input_data):
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, exercise_12_read_and_format_input_data, read_data):
-    present_and_region_data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_12.txt", separator="\n")
+    present_and_region_data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_12.txt", separator="\n")
 
     present_shapes, regions_and_quantities = exercise_12_read_and_format_input_data(
         present_and_region_data=present_and_region_data,
@@ -3751,6 +3695,11 @@ def _(DATA_DIRECTORY_PATH, exercise_12_read_and_format_input_data, read_data):
     #     present_shapes=present_shapes,
     #     regions_and_quantities=regions_and_quantities
     # ))
+    return
+
+
+@app.cell
+def _():
     return
 
 

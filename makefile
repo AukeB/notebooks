@@ -34,7 +34,8 @@ git:
 	@echo "📤 Successfully executed git."
 
 copy:
-	uv run marimo export ipynb notebooks/advent_of_code_2025.py -o notebooks/advent_of_code_2025.ipynb -f
+	uv run marimo export ipynb notebooks/advent_of_code/advent_of_code_2015.py -o notebooks/advent_of_code/advent_of_code_2015.ipynb -f
+	uv run marimo export ipynb notebooks/advent_of_code/advent_of_code_2025.py -o notebooks/advent_of_code/advent_of_code_2025.ipynb -f
 
 all:
 	make copy

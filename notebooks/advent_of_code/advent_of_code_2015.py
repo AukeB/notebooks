@@ -25,7 +25,9 @@ def _():
     import marimo as mo
 
     from collections import defaultdict
-    return defaultdict, mo
+
+    from advent_of_code_utils import read_data
+    return defaultdict, mo, read_data
 
 
 @app.cell(hide_code=True)
@@ -38,45 +40,9 @@ def _(mo):
 
 @app.cell
 def _():
-    DATA_DIRECTORY_PATH = "data/aoc_2015"
+    DATA_DIRECTORY_PATH = "data/advent_of_code"
     # DATA_DIRECTORY_PATH = "../" + DATA_DIRECTORY_PATH
     return (DATA_DIRECTORY_PATH,)
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ## Helper functions
-    """)
-    return
-
-
-@app.function
-def read_data(file_path: str, separator: str) -> str | list[str]:
-    """
-    Reads a file and returns the content of the file as a list of str objects
-    or a single str if the file contains only one element. The separator 
-    determines how the file content is split: by commas or new lines.
-
-    Args:
-        file_path (str): The path to the file.
-        separator (str): The separator for splitting the file content.
-
-    Returns:
-        str | list[str]: A list of strings split based on the separator, 
-                         or a single string if there's only one element.
-    """
-    with open(file_path, "r") as file:
-        content = file.read().strip()
-        if separator == ",":
-            data = content.split(",")
-        elif separator == "\n":
-            data = content.split("\n")
-
-    if len(data) == 1:
-        return data[0]
-        
-    return data
 
 
 @app.cell(hide_code=True)
@@ -155,7 +121,7 @@ def _(defaultdict):
             int: The final floor number after following all instructions.
         """
         direction_count = defaultdict(int)
-    
+
         for character in floor_instructions:
             if character == "(":
                 direction_count["up"] += 1
@@ -169,8 +135,12 @@ def _(defaultdict):
 
 
 @app.cell
-def _(DATA_DIRECTORY_PATH, exercise_1_1_find_the_final_floor_number):
-    floor_instructions = read_data(file_path=f"{DATA_DIRECTORY_PATH}/day_1.txt", separator="\n")
+def _(
+    DATA_DIRECTORY_PATH,
+    exercise_1_1_find_the_final_floor_number,
+    read_data,
+):
+    floor_instructions = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2015_day_01.txt", separator="\n")
 
     print(exercise_1_1_find_the_final_floor_number(floor_instructions=floor_instructions))
     return (floor_instructions,)
@@ -233,7 +203,7 @@ def exercise_1_2_find_position_first_character_basement_entry(
     """
     starting_index = 1
     current_floor_number = starting_floor_number
-    
+
     for index, character in enumerate(floor_instructions, start=starting_index):
         current_floor_number += 1 if character == "(" else - 1
 
