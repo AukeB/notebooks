@@ -3510,14 +3510,14 @@ def exercise_11_2_find_all_device_paths(
             int: The number of valid paths from this node to `end_device_name`
                 that include all required mid-device nodes.
         """
-        
+
         """
         Instead of just having the node as key, a tuple is created consisting
         of the node and a frozen set of visited nodes. The set if frozen
         so that it can be used as a key of the dictionary.
         """
         key = (node, visited_nodes)
-        
+
         if key in number_of_valid_paths:
             return number_of_valid_paths[key]
 
@@ -3538,7 +3538,7 @@ def exercise_11_2_find_all_device_paths(
             find_number_of_paths(next_node, visited_nodes)
             for next_node in device_mapping[node]
         )
-        
+
         return number_of_valid_paths[key]
 
     return find_number_of_paths(start_device_name, frozenset())
@@ -3704,77 +3704,186 @@ def _(mo):
 
 @app.cell
 def _(defaultdict):
-    def exercise_12_read_and_format_input_data(
-        present_and_region_data: list[str],
-        verbose: str = True
-    ) -> int:
+    import numpy as np
+
+    class Present:
+        """
+        Represents a 2D present shape using a grid of 0's and 1's.
+    
+        Provides operations to rotate and flip the shape. Useful for 
+        manipulation of discrete 2D patterns in grid-based problems.
+    
+        Attributes:
+            present_shape (list[list[int]]): 2D grid representing the shape, 
+                where 1 indicates a filled cell and 0 indicates an empty cell.
+        """
+        def __init__(self, present_shape: list[list[int]]) -> None:
+            """
+            Initialize a Present object with a 2D grid.
+        
+            Args:
+                present_shape (list[list[int]]): The 2D grid representing the shape.
+            """
+            self.shape = present_shape
+
+        def rotate_clockwise(self) -> None:
+            """Rotate the present 90 degrees clockwise in-place"""
+            self.shape = [list(row) for row in zip(*self.shape[::-1])]
+
+        def rotate_counterclockwise(self) -> None:
+            """Rotate the present 90 degrees counterclockwise in-place."""
+            self.shape = [list(row) for row in zip(*self.shape)]
+            self.shape.reverse()
+
+        def flip_horizontal(self) -> None:
+            """Flip the present horizontally in-place."""
+            self.shape = [row[::-1] for row in self.shape]
+
+        def flip_vertical(self) -> None:
+            """Flip the present vertically in-place."""
+            self.shape = self.shape[::-1]
+
+        def __str__(self) -> str:
+            """
+            Return a string representation of the present.
+        
+            Converts the 2D grid of 0s and 1s into a visual format using
+            '#' for filled cells and '.' for empty cells.
+            """
+            return "\n" + "\n".join("".join('#' if cell else '.' for cell in row) for row in self.shape)
+
+
+    class Grid():
         """ """
-        # Related to the presents.
-        present_detected = False
-        present_index = None
-        present_shape = []
-        present_shapes = defaultdict(int)
+        def __init__(
+            self,
+            dimensions: list[int]
+        ) -> None:
+            """ """
+            self.dimensions = dimensions
+            self.grid = np.zeros(self.dimensions, dtype=int)
 
-        # Related to the regions under the tree and number of presents that need to fit into that region.abs
-        region_detected = False
-        all_regions_and_quantities = []
+        def place(self, present: Present, x: int, y: int) -> None:
+            """ """
+            shape = np.array(present.shape, dtype=int)
+            rows, cols = shape.shape
+            self.grid[x:x + rows, y:y + cols] += shape
+        
 
-        # Important: The order of all the if-statement under the for-loop matters.
-        for row in present_and_region_data:
-            if present_detected:            
-                if row.strip() == "":
-                    present_shapes[present_index] = present_shape
-                    present_detected = False
-                else:
-                    present_shape.append(row)
+    class ChristmasTreeFarm:
+        """ """
 
-            if row.endswith(":"):
-                present_index = int(row[:-1])
-                present_detected = True
-                present_shape = []
+        def __init__(
+            self,
+            present_and_region_data: list[str],
+            verbose: str=True,
+        ) -> None:
+            """ """
+            self.present_and_region_data = present_and_region_data
+            self.verbose = verbose
+            self.presents, self.all_regions_and_quantities = self._read_and_format_input_data()
 
-            if row and row[-1].isdigit():
-                region_detected = True
+        def _read_and_format_input_data(
+            self,
+        ) -> tuple[dict[int, Present], list[dict[str, object]]]:
+            """ """
+            # Related to the presents.
+            present_detected = False
+            present_index = None
+            present_shape = []
+            present_shapes = defaultdict(int)
+    
+            # Related to the regions under the tree and number of presents that need to fit into that region.
+            region_detected = False
+            all_regions_and_quantities = []
+    
+            # Important: The order of all the if-statement under the for-loop matters.
+            for row in self.present_and_region_data:
+                if present_detected:            
+                    if row.strip() == "":
+                        present_shape = [[1 if char == '#' else 0 for char in row] for row in present_shape]
+                        present = Present(present_shape=present_shape)
+                        present_shapes[present_index] = present
+                        present_detected = False
+                    else:
+                        present_shape.append(row)
+    
+                if row.endswith(":"):
+                    present_index = int(row[:-1])
+                    present_detected = True
+                    present_shape = []
+    
+                if row and row[-1].isdigit():
+                    region_detected = True
+    
+                if region_detected:
+                    region, raw_quantities = row.split(":")
+    
+                    region_schape = [int(dimension) for dimension in region.split("x")]
+                    raw_quantities = [int(index) for index in raw_quantities.strip().split(" ")]
+    
+                    present_quantities = {}
+                    for present_index, quantity in enumerate(raw_quantities):
+                        if quantity:
+                            present_quantities[present_index] = quantity
+    
+                    regions_and_quantities = {}
+                    regions_and_quantities["region_shape"] = region_schape
+                    regions_and_quantities["present_quantities"] = present_quantities
+    
+                    all_regions_and_quantities.append(regions_and_quantities)
+    
+            if self.verbose:
+                print("Presents:")
+                for k, v in present_shapes.items():
+                    print(k, v)
+                print("\nChristmas tree regions and present indices:")
+                for x in all_regions_and_quantities:
+                    print(x)
+    
+            return present_shapes, all_regions_and_quantities
 
-            if region_detected:
-                region, raw_quantities = row.split(":")
+        def _solve_single_problem(
+            self, 
+            region_shape: list[int],
+            present_quantities: dict[int, int],
+        ) -> int:
+            """ """
+            print(region_shape, present_quantities, "\n")
 
-                region_schape = [int(dimension) for dimension in region.split("x")]
-                raw_quantities = [int(index) for index in raw_quantities.strip().split(" ")]
+            grid = Grid(dimensions=region_shape)
 
-                present_quantities = {}
-                for present_index, quantity in enumerate(raw_quantities):
-                    present_quantities[present_index] = quantity
+            for row in grid.grid:
+                print(row)
 
-                regions_and_quantities = {}
-                regions_and_quantities["region_shape"] = region_schape
-                regions_and_quantities["present_quantities"] = present_quantities
+            test_present = self.presents[0]
+            test_present.flip_horizontal()
 
-                all_regions_and_quantities.append(regions_and_quantities)
+            grid.place(test_present, 0, 0)
 
-        if verbose:
-            print("Presents:")
-            for k, v in present_shapes.items():
-                print(k, v)
-            print("\nChristmas tree regions and present indices:")
-            for x in all_regions_and_quantities:
-                print(x)
-
-        return present_shapes, all_regions_and_quantities
-    return (exercise_12_read_and_format_input_data,)
+            for row in grid.grid:
+                print(row)
 
 
-@app.function
-def exercise_12_1_find_number_of_fitting_presents(
-    present_shapes: dict[int, list[str]],
-    regions_and_quantities: list[dict[str, object]]
-) -> int:
-    """ """
-    pass
 
+        
+        
 
-@app.cell
-def _(exercise_12_read_and_format_input_data):
+        def solve_all_problems(self) -> int:
+            """ """
+            for i, row in enumerate(self.all_regions_and_quantities):
+                if i == 0:
+                    region_shape = row["region_shape"]
+                    present_quantities = row["present_quantities"]
+                
+                    solution = self._solve_single_problem(
+                        region_shape=region_shape,
+                        present_quantities=present_quantities
+                    )
+
+            return 2
+        
+
     example_present_and_region_data = [
         "0:",
         "###",
@@ -3811,33 +3920,19 @@ def _(exercise_12_read_and_format_input_data):
         "12x5: 1 0 1 0 3 2"
     ]
 
-    example_present_shapes, example_regions_and_quantities = exercise_12_read_and_format_input_data(
+    christmas_tree_farm = ChristmasTreeFarm(
         present_and_region_data=example_present_and_region_data,
-        verbose=True
+        verbose=True,
     )
 
-    # solution_example_12_1 = exercise_12_1_find_number_of_fitting_presents(
-    #     present_shapes=example_present_shapes,
-    #     regions_and_quantities=example_regions_and_quantities
-    # )
+    solution_example_12 = christmas_tree_farm.solve_all_problems()
 
-    # assert solution_example_12_1 == 2
+    assert solution_example_12 == 2
     return
 
 
 @app.cell
-def _(DATA_DIRECTORY_PATH, exercise_12_read_and_format_input_data, read_data):
-    present_and_region_data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_12.txt", separator="\n")
-
-    present_shapes, regions_and_quantities = exercise_12_read_and_format_input_data(
-        present_and_region_data=present_and_region_data,
-        verbose=False
-    )
-
-    # print(exercise_12_1_find_number_of_fitting_presents(
-    #     present_shapes=present_shapes,
-    #     regions_and_quantities=regions_and_quantities
-    # ))
+def _():
     return
 
 
