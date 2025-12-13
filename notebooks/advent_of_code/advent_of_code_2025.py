@@ -3727,20 +3727,28 @@ def _(defaultdict):
             self.shape = present_shape
 
         def rotate_clockwise(self) -> None:
-            """Rotate the present 90 degrees clockwise in-place"""
+            """
+            Rotate the present 90 degrees clockwise in-place
+            """
             self.shape = [list(row) for row in zip(*self.shape[::-1])]
 
         def rotate_counterclockwise(self) -> None:
-            """Rotate the present 90 degrees counterclockwise in-place."""
+            """
+            Rotate the present 90 degrees counterclockwise in-place.
+            """
             self.shape = [list(row) for row in zip(*self.shape)]
             self.shape.reverse()
 
         def flip_horizontal(self) -> None:
-            """Flip the present horizontally in-place."""
+            """
+            Flip the present horizontally in-place.
+            """
             self.shape = [row[::-1] for row in self.shape]
 
         def flip_vertical(self) -> None:
-            """Flip the present vertically in-place."""
+            """
+            Flip the present vertically in-place.
+            """
             self.shape = self.shape[::-1]
 
         def __str__(self) -> str:
@@ -3762,6 +3770,20 @@ def _(defaultdict):
             """ """
             self.dimensions = dimensions
             self.grid = np.zeros(self.dimensions, dtype=int)
+
+        def fits(self, present: Present, x: int, y: int) -> bool:
+            """ """
+            shape = np.array(present.shape, dtype=int)
+            rows, cols = shape.shape
+
+            if x < 0 or y < 0 or x + rows > self.dimensions[0] or y + cols > self.dimensions[1]:
+                return False
+
+            region = self.grid[x:x + rows, y:y + cols]
+            if np.any(region + shape > 1):
+                return False
+
+            return True
 
         def place(self, present: Present, x: int, y: int) -> None:
             """ """
@@ -3853,22 +3875,25 @@ def _(defaultdict):
 
             grid = Grid(dimensions=region_shape)
 
-            for row in grid.grid:
-                print(row)
+            for present_index, present_quantity in present_quantities.items():
+                for number in range(present_quantity):
+                    present = self.presents[present_index]
+                
+                    if number > 0:
+                        present.flip_horizontal()
 
-            test_present = self.presents[0]
-            test_present.flip_horizontal()
+                    placed = False
 
-            grid.place(test_present, 0, 0)
+                    for y in range(region_shape[0]):
+                        for x in range(region_shape[1]):
+                            if grid.fits(present, x, y):
+                                grid.place(present, x, y)
+                                placed = True
+                                break
 
-            for row in grid.grid:
-                print(row)
-
-
-
-        
-        
-
+                        if placed:
+                            break
+                            
         def solve_all_problems(self) -> int:
             """ """
             for i, row in enumerate(self.all_regions_and_quantities):
@@ -3922,7 +3947,7 @@ def _(defaultdict):
 
     christmas_tree_farm = ChristmasTreeFarm(
         present_and_region_data=example_present_and_region_data,
-        verbose=True,
+        verbose=False,
     )
 
     solution_example_12 = christmas_tree_farm.solve_all_problems()
