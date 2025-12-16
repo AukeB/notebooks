@@ -2456,7 +2456,24 @@ def _():
         junction_positions: list[str],
         number_of_connections: int,
     ) -> int:
-        """ """
+        """
+        Connects junction boxes based on closest distances and computes the product
+        of the sizes of the three largest resulting circuits.
+
+        Each junction box is represented by 3D coordinates. The function finds the
+        specified number of closest junction pairs, merges them into circuits, and
+        keeps track of connected components. After processing, it multiplies the
+        sizes of the three largest circuits.
+
+        Args:
+            junction_positions (list[str]): List of junction positions as comma-
+                separated strings "X,Y,Z".
+            number_of_connections (int): Number of closest junction pairs to 
+                connect.
+
+        Returns:
+            int: Product of the sizes of the three largest connected circuits.
+        """
         junction_positions = [[int(num) for num in row.split(",")] for row in junction_positions]
 
         # First create a distance matrix.
@@ -2464,7 +2481,7 @@ def _():
 
         for i in range(len(junction_positions)):
             distance_matrix_row = []
-        
+
             for j in range(len(junction_positions)):
                 if j < i:
                     first_junction = junction_positions[i]
@@ -2499,7 +2516,7 @@ def _():
 
         for (i, j) in sorted_distance_pairs.keys():
             processed_pairs += 1
-        
+
             if processed_pairs > number_of_connections:
                 break
 
@@ -2511,7 +2528,7 @@ def _():
 
             if set_1 == -1 and set_2 == -1:
                 new_chain_id = max(chains.values()) + 1
-            
+
                 chains[junction_1] = new_chain_id
                 chains[junction_2] = new_chain_id
             elif set_1 > -1 and set_2 == -1:
@@ -2530,7 +2547,7 @@ def _():
         chain_counter = [count for chain_id, count in counts_per_chain.items() if chain_id != -1]
         chain_counter.sort(reverse=True)
         final_answer = chain_counter[0] * chain_counter[1] * chain_counter[2]
-        
+
         return final_answer
     return (exercise_8_1_find_closest_junctions,)
 
@@ -2566,7 +2583,7 @@ def _(exercise_8_1_find_closest_junctions):
     )
 
     assert solution_example_8_1 == 40
-    return
+    return (example_junction_positions,)
 
 
 @app.cell
@@ -2577,7 +2594,7 @@ def _(DATA_DIRECTORY_PATH, exercise_8_1_find_closest_junctions, read_data):
         junction_positions=junction_positions,
         number_of_connections=1000
     ))
-    return
+    return (junction_positions,)
 
 
 @app.cell(hide_code=True)
@@ -2608,8 +2625,109 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
-def _():
+@app.function
+def exercise_8_2_merge_until_one_chain(
+    junction_positions: list[str],
+) -> int:
+    """
+    Connects junction boxes until all boxes form a single circuit, then returns
+    the product of the X coordinates of the last two boxes connected.
+
+    Each junction box is represented by 3D coordinates. The function repeatedly
+    connects the closest unconnected pairs and merges their chains. Once all
+    boxes belong to a single circuit, it multiplies the X coordinates of the
+    final pair that merged the last two chains.
+
+    Args:
+        junction_positions (list[str]): List of junction positions as comma-
+            separated strings "X,Y,Z".
+
+    Returns:
+        int: Product of the X coordinates of the last two junctions merged
+            to form a single circuit.
+    """
+    junction_positions = [[int(num) for num in row.split(",")] for row in junction_positions]
+
+    # First create a distance matrix.
+    distance_matrix = []
+
+    for i in range(len(junction_positions)):
+        distance_matrix_row = []
+
+        for j in range(len(junction_positions)):
+            if j < i:
+                first_junction = junction_positions[i]
+                second_junction = junction_positions[j]
+
+                distance_sum = 0
+                for x1, x2 in zip(first_junction, second_junction):
+                    distance_sum += (x1 - x2)**2
+
+                distance_matrix_row.append(distance_sum)
+            else:
+                distance_matrix_row.append(None)
+        distance_matrix.append(distance_matrix_row)
+
+    # Next turn this distance matrix into a dictionary that is sorted by distance.
+    distance_pairs = {}
+
+    for i in range(len(distance_matrix)):
+        for j in range(len(distance_matrix[0])):
+            if j < i:
+                distance_pairs[(i, j)] = distance_matrix[i][j]
+
+    sorted_distance_pairs = dict(sorted(distance_pairs.items(),
+        key=lambda item: (item[1], item[0][0], item[0][1])
+    ))
+
+    # This variable keeps track of all the chains of junction boxes. Every coordinate
+    # of a junction box is initialized with a value of -1 (the id for the chain), which
+    # means it is not part of a chain yet.
+    chains = {tuple(coordinates): -1 for coordinates in junction_positions}
+
+    for (i, j) in sorted_distance_pairs.keys():
+        junction_1 = tuple(junction_positions[i])
+        junction_2 = tuple(junction_positions[j])
+
+        set_1 = chains[junction_1]
+        set_2 = chains[junction_2]
+
+        if set_1 == -1 and set_2 == -1:
+            new_chain_id = max(chains.values()) + 1
+
+            chains[junction_1] = new_chain_id
+            chains[junction_2] = new_chain_id
+        elif set_1 > -1 and set_2 == -1:
+            chains[junction_2] = set_1
+        elif set_2 > -1 and set_1 == -1:
+            chains[junction_1] = set_2
+        elif set_1 > -1 and set_2 > -1:
+            if set_1 == set_2:
+                pass
+            elif set_1 != set_2:
+                for chain in chains:
+                    if chains[chain] == set_2:
+                        chains[chain] = set_1
+
+        if -1 not in chains.values() and len(set(chains.values())) == 1:
+            final_answer = junction_1[0] * junction_2[0]
+            
+            return final_answer
+
+
+@app.cell
+def _(example_junction_positions):
+    solution_example_8_2 = exercise_8_2_merge_until_one_chain(
+        junction_positions=example_junction_positions
+    )
+
+    assert solution_example_8_2 == 25272
+    return
+
+
+@app.cell
+def _(junction_positions):
+    print(exercise_8_2_merge_until_one_chain(junction_positions=junction_positions))
     return
 
 
@@ -4050,17 +4168,17 @@ def _(defaultdict):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     return
 
