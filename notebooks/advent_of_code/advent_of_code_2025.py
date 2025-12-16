@@ -2448,13 +2448,95 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _():
-    return
+    from collections import Counter
+
+    def exercise_8_1_find_closest_junctions(
+        junction_positions: list[str],
+        number_of_connections: int,
+    ) -> int:
+        """ """
+        junction_positions = [[int(num) for num in row.split(",")] for row in junction_positions]
+
+        # First create a distance matrix.
+        distance_matrix = []
+
+        for i in range(len(junction_positions)):
+            distance_matrix_row = []
+        
+            for j in range(len(junction_positions)):
+                if j < i:
+                    first_junction = junction_positions[i]
+                    second_junction = junction_positions[j]
+
+                    distance_sum = 0
+                    for x1, x2 in zip(first_junction, second_junction):
+                        distance_sum += (x1 - x2)**2
+
+                    distance_matrix_row.append(distance_sum)
+                else:
+                    distance_matrix_row.append(None)
+            distance_matrix.append(distance_matrix_row)
+
+        # Next turn this distance matrix into a dictionary that is sorted by distance.
+        distance_pairs = {}
+
+        for i in range(len(distance_matrix)):
+            for j in range(len(distance_matrix[0])):
+                if j < i:
+                    distance_pairs[(i, j)] = distance_matrix[i][j]
+
+        sorted_distance_pairs = dict(sorted(distance_pairs.items(),
+            key=lambda item: (item[1], item[0][0], item[0][1])
+        ))
+
+        # This variable keeps track of all the chains of junction boxes. Every coordinate
+        # of a junction box is initialized with a value of -1 (the id for the chain), which
+        # means it is not part of a chain yet.
+        chains = {tuple(coordinates): -1 for coordinates in junction_positions}
+        processed_pairs: int = 0
+
+        for (i, j) in sorted_distance_pairs.keys():
+            processed_pairs += 1
+        
+            if processed_pairs > number_of_connections:
+                break
+
+            junction_1 = tuple(junction_positions[i])
+            junction_2 = tuple(junction_positions[j])
+
+            set_1 = chains[junction_1]
+            set_2 = chains[junction_2]
+
+            if set_1 == -1 and set_2 == -1:
+                new_chain_id = max(chains.values()) + 1
+            
+                chains[junction_1] = new_chain_id
+                chains[junction_2] = new_chain_id
+            elif set_1 > -1 and set_2 == -1:
+                chains[junction_2] = set_1
+            elif set_2 > -1 and set_1 == -1:
+                chains[junction_1] = set_2
+            elif set_1 > -1 and set_2 > -1:
+                if set_1 == set_2:
+                    pass
+                elif set_1 != set_2:
+                    for chain in chains:
+                        if chains[chain] == set_2:
+                            chains[chain] = set_1
+
+        counts_per_chain = Counter(chains.values())
+        chain_counter = [count for chain_id, count in counts_per_chain.items() if chain_id != -1]
+        chain_counter.sort(reverse=True)
+        final_answer = chain_counter[0] * chain_counter[1] * chain_counter[2]
+        
+        return final_answer
+    return (exercise_8_1_find_closest_junctions,)
 
 
 @app.cell
-def _():
+def _(exercise_8_1_find_closest_junctions):
     example_junction_positions = [
         "162,817,812",
         "57,618,57",
@@ -2477,12 +2559,24 @@ def _():
         "984,92,344",
         "425,690,689",
     ]
+
+    solution_example_8_1 = exercise_8_1_find_closest_junctions(
+        junction_positions=example_junction_positions,
+        number_of_connections=10
+    )
+
+    assert solution_example_8_1 == 40
     return
 
 
 @app.cell
-def _(DATA_DIRECTORY_PATH, read_data):
+def _(DATA_DIRECTORY_PATH, exercise_8_1_find_closest_junctions, read_data):
     junction_positions = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_08.txt", separator="\n")
+
+    print(exercise_8_1_find_closest_junctions(
+        junction_positions=junction_positions,
+        number_of_connections=1000
+    ))
     return
 
 
@@ -3709,10 +3803,10 @@ def _(defaultdict):
     class Present:
         """
         Represents a 2D present shape using a grid of 0's and 1's.
-    
+
         Provides operations to rotate and flip the shape. Useful for 
         manipulation of discrete 2D patterns in grid-based problems.
-    
+
         Attributes:
             present_shape (list[list[int]]): 2D grid representing the shape, 
                 where 1 indicates a filled cell and 0 indicates an empty cell.
@@ -3720,7 +3814,7 @@ def _(defaultdict):
         def __init__(self, present_shape: list[list[int]]) -> None:
             """
             Initialize a Present object with a 2D grid.
-        
+
             Args:
                 present_shape (list[list[int]]): The 2D grid representing the shape.
             """
@@ -3754,7 +3848,7 @@ def _(defaultdict):
         def __str__(self) -> str:
             """
             Return a string representation of the present.
-        
+
             Converts the 2D grid of 0s and 1s into a visual format using
             '#' for filled cells and '.' for empty cells.
             """
@@ -3790,7 +3884,7 @@ def _(defaultdict):
             shape = np.array(present.shape, dtype=int)
             rows, cols = shape.shape
             self.grid[x:x + rows, y:y + cols] += shape
-        
+
 
     class ChristmasTreeFarm:
         """ """
@@ -3814,11 +3908,11 @@ def _(defaultdict):
             present_index = None
             present_shape = []
             present_shapes = defaultdict(int)
-    
+
             # Related to the regions under the tree and number of presents that need to fit into that region.
             region_detected = False
             all_regions_and_quantities = []
-    
+
             # Important: The order of all the if-statement under the for-loop matters.
             for row in self.present_and_region_data:
                 if present_detected:            
@@ -3829,32 +3923,32 @@ def _(defaultdict):
                         present_detected = False
                     else:
                         present_shape.append(row)
-    
+
                 if row.endswith(":"):
                     present_index = int(row[:-1])
                     present_detected = True
                     present_shape = []
-    
+
                 if row and row[-1].isdigit():
                     region_detected = True
-    
+
                 if region_detected:
                     region, raw_quantities = row.split(":")
-    
+
                     region_schape = [int(dimension) for dimension in region.split("x")]
                     raw_quantities = [int(index) for index in raw_quantities.strip().split(" ")]
-    
+
                     present_quantities = {}
                     for present_index, quantity in enumerate(raw_quantities):
                         if quantity:
                             present_quantities[present_index] = quantity
-    
+
                     regions_and_quantities = {}
                     regions_and_quantities["region_shape"] = region_schape
                     regions_and_quantities["present_quantities"] = present_quantities
-    
+
                     all_regions_and_quantities.append(regions_and_quantities)
-    
+
             if self.verbose:
                 print("Presents:")
                 for k, v in present_shapes.items():
@@ -3862,7 +3956,7 @@ def _(defaultdict):
                 print("\nChristmas tree regions and present indices:")
                 for x in all_regions_and_quantities:
                     print(x)
-    
+
             return present_shapes, all_regions_and_quantities
 
         def _solve_single_problem(
@@ -3878,7 +3972,7 @@ def _(defaultdict):
             for present_index, present_quantity in present_quantities.items():
                 for number in range(present_quantity):
                     present = self.presents[present_index]
-                
+
                     if number > 0:
                         present.flip_horizontal()
 
@@ -3893,21 +3987,21 @@ def _(defaultdict):
 
                         if placed:
                             break
-                            
+
         def solve_all_problems(self) -> int:
             """ """
             for i, row in enumerate(self.all_regions_and_quantities):
                 if i == 0:
                     region_shape = row["region_shape"]
                     present_quantities = row["present_quantities"]
-                
+
                     solution = self._solve_single_problem(
                         region_shape=region_shape,
                         present_quantities=present_quantities
                     )
 
             return 2
-        
+
 
     example_present_and_region_data = [
         "0:",
