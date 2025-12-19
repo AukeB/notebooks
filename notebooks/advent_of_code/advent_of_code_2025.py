@@ -2711,7 +2711,7 @@ def exercise_8_2_merge_until_one_chain(
 
         if -1 not in chains.values() and len(set(chains.values())) == 1:
             final_answer = junction_1[0] * junction_2[0]
-            
+
             return final_answer
 
 
@@ -2852,44 +2852,136 @@ def _(mo):
     return
 
 
-@app.function
-def exercise_9_1_find_largest_rectangle(
-    red_tile_coordinates: list[str]
-) -> int:
-    """
-    Find the largest possible rectangle area formed by any two red tiles as opposite corners.
+@app.cell
+def _():
+    import plotly.graph_objects as go
 
-    Each coordinate is given as a string "x,y". Two tiles define a rectangle whose area is
-    computed as (abs(x1 - x2) + 1) * (abs(y1 - y2) + 1). All unique tile pairs are evaluated,
-    and the largest resulting rectangle area is returned.
+    def plot_red_tiles(
+        red_tile_coordinates: list[list[int]],
+        largest_rect_coordinates: list[list[int]],
+        line_color: str="black",
+        marker_color: str="black",
+    ) -> None:
+        """
+        Plot connected tile coordinates and a largest rectangle overlay.
 
-    Args:
-        red_tile_coordinates (list[str]): List of red tile positions as "x,y" strings.
+        This function visualizes two closed polygonal paths using Plotly:
+        one representing red tiles and another representing the largest
+        rectangle. Both shapes are plotted with equal x/y scaling.
 
-    Returns:
-        int: The largest rectangle area formed by any pair of red tiles.
-    """
-    red_tile_coordinates = [
-        [int(num) for num in row.split(",")] for row in red_tile_coordinates
-    ]
+        Args:
+            red_tile_coordinates: List of [x, y] pairs defining red tiles.
+            largest_rect_coordinates: List of [x, y] pairs defining a rectangle.
+            line_color: Line color for the red tile connections.
+            marker_color: Marker color for the red tile points.
+        """
 
-    largest_area = 0
+        def plot_connections(
+            fig: go.Figure,
+            coordinates: list[list[int]],
+            line_color: str,
+            marker_color: str,
+        ) -> go.Figure:
+            """
+            Add a closed polygon trace to an existing Plotly figure.
 
-    for i in range(len(red_tile_coordinates)):
-        for j in range(i):
-            c1 = red_tile_coordinates[i]
-            c2 = red_tile_coordinates[j]
+            The first coordinate is appended to the end to close the loop.
+            A single scatter trace with markers and lines is added.
 
-            rectangle_area = (1 + abs(c1[0]-c2[0])) * (1 + abs(c1[1]-c2[1]))
+            Args:
+                fig: Plotly figure to which the trace is added.
+                coordinates: List of [x, y] coordinate pairs.
+                line_color: Color of the connecting lines.
+                marker_color: Color of the markers.
 
-            if rectangle_area > largest_area:
-                largest_area = rectangle_area
+            Returns:
+                The updated Plotly figure.
+            """
+            coordinates.append(coordinates[0])
+            x_coordinates, y_coordinates = zip(*coordinates)
 
-    return largest_area
+            fig.add_trace(go.Scatter(
+                x=x_coordinates,
+                y=y_coordinates,
+                mode="markers+lines",
+                line=dict(color=line_color),
+                marker=dict(color=marker_color),
+            ))
+
+            return fig
+
+        fig = go.Figure()
+
+        fig = plot_connections(fig, red_tile_coordinates, line_color, marker_color)
+        fig = plot_connections(fig, largest_rect_coordinates, "red", "red")
+
+        fig.update_layout(
+            yaxis_scaleanchor="x",
+            template="plotly_white",
+        )
+
+        fig.show()
+    return (plot_red_tiles,)
 
 
 @app.cell
-def _():
+def _(plot_red_tiles):
+    def exercise_9_1_find_largest_rectangle(
+        red_tile_coordinates: list[str],
+    ) -> int:
+        """
+        Find the largest possible rectangle area formed by any two red tiles as opposite corners.
+
+        Each coordinate is given as a string "x,y". Two tiles define a rectangle whose area is
+        computed as (abs(x1 - x2) + 1) * (abs(y1 - y2) + 1). All unique tile pairs are evaluated,
+        and the largest resulting rectangle area is returned.
+
+        Args:
+            red_tile_coordinates (list[str]): List of red tile positions as "x,y" strings.
+
+        Returns:
+            int: The largest rectangle area formed by any pair of red tiles.
+        """
+        red_tile_coordinates = [
+            [int(num) for num in row.split(",")] for row in red_tile_coordinates
+        ]
+
+        largest_rect_area = 0
+        largest_rect_side_lengths = None
+        largest_rect_coordinates = None
+
+        for i in range(len(red_tile_coordinates)):
+            for j in range(i):
+                c1 = red_tile_coordinates[i]
+                c2 = red_tile_coordinates[j]
+
+                rectangle_area = (1 + abs(c1[0]-c2[0])) * (1 + abs(c1[1]-c2[1]))
+
+                if rectangle_area > largest_rect_area:
+                    largest_rect_area = rectangle_area
+
+                    largest_rect_side_lengths = ((1 + abs(c1[0]-c2[0])), (1 + abs(c1[1]-c2[1])))
+
+                    largest_rect_coordinates = [c1, c2]
+                    largest_rect_coordinates.insert(1, [c2[0], c1[1]])
+                    largest_rect_coordinates.append([c1[0], c2[1]])
+
+        plot_red_tiles(
+            red_tile_coordinates=red_tile_coordinates,
+            largest_rect_coordinates=largest_rect_coordinates
+        )
+
+        print("Largest rectangle:")
+        print(f"- Width:  {largest_rect_side_lengths[0]}")
+        print(f"- Height: {largest_rect_side_lengths[1]}")
+        print(f"- Area:   {largest_rect_side_lengths[0]} * {largest_rect_side_lengths[1]} = {largest_rect_area}")
+
+        return largest_rect_area
+    return (exercise_9_1_find_largest_rectangle,)
+
+
+@app.cell
+def _(exercise_9_1_find_largest_rectangle):
     example_red_tile_coordinates = [
         "7,1",
         "11,1",
@@ -2904,14 +2996,14 @@ def _():
     solution_example_9_1 = exercise_9_1_find_largest_rectangle(red_tile_coordinates=example_red_tile_coordinates)
 
     assert solution_example_9_1 == 50
-    return
+    return (example_red_tile_coordinates,)
 
 
 @app.cell
-def _(DATA_DIRECTORY_PATH, read_data):
+def _(DATA_DIRECTORY_PATH, exercise_9_1_find_largest_rectangle, read_data):
     red_tile_coordinates = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_09.txt", separator="\n")
 
-    print(exercise_9_1_find_largest_rectangle(red_tile_coordinates=red_tile_coordinates))
+    exercise_9_1_find_largest_rectangle(red_tile_coordinates=red_tile_coordinates)
     return
 
 
@@ -3017,8 +3109,142 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
+def _(defaultdict, plot_red_tiles):
+    from collections import namedtuple
+
+    def exercise_9_2_find_largest_area(
+        red_tile_coordinates: list[str]
+    ) -> int:
+        """ """
+        # Get data in appropriate format.
+        Point = namedtuple("Point", ["x", "y"])
+        red_tile_coordinates = [
+            Point(*[int(num) for num in row.split(",")])
+            for row in red_tile_coordinates
+        ]
+    
+        # Obtain min and max x and y coordinates.
+        all_x_coordinates = [coordinate.x for coordinate in red_tile_coordinates]
+        all_y_coordinates = [coordinate.y for coordinate in red_tile_coordinates]
+                         
+        x_min, x_max = min(all_x_coordinates) - 1, max(all_x_coordinates) + 1
+        y_min, y_max = min(all_y_coordinates) - 1, max(all_y_coordinates) + 1
+
+        # Transform the data so that it represents the edges between the coordinates/nodes.
+        horizontal_edges, vertical_edges = defaultdict(list), defaultdict(list)
+         
+        for current, next in zip(red_tile_coordinates, red_tile_coordinates[1:] + red_tile_coordinates[:1]):
+            if current.y == next.y:
+                horizontal_edges[current.y].append([current.x, next.x])
+            elif current.x == next.x:
+                vertical_edges[current.x].append([current.y, next.y])
+
+        horizontal_edges, vertical_edges = dict(sorted(horizontal_edges.items())), dict(sorted(vertical_edges.items()))
+    
+        for k, v in horizontal_edges.items():
+            print(k, v)
+        print()
+        for k, v in vertical_edges.items():
+            print(k, v)
+        print()
+
+        # Main loop
+        for i in range(len(red_tile_coordinates)):
+            for j in range(i):
+                if i == 2 and j == 0:
+                    c1 = red_tile_coordinates[i]
+                    c2 = red_tile_coordinates[j]
+    
+                    vertical_min_counter = 0
+                    vertical_max_counter = 0
+                    horizontal_min_counter = 0
+                    horizontal_max_counter = 0
+    
+                    # Assume that coordinates with the same x or y coordinate
+                    # will never create the largest rectangle area.
+                    if c1.x != c2.x and c1.y != c2.y:
+                        print(i, j)
+                        c3 = Point(x=c1.x, y=c2.y)
+                        c4 = Point(x=c2.x, y=c1.y)
+    
+                        for k in range(c4.x, x_min, -1):
+                            if k in vertical_edges.keys():
+                                low, high = min(vertical_edges[k][0]), max(vertical_edges[k][0])
+                                if low <= c4.y <= high:
+                                    vertical_min_counter += 1
+                    
+                        for k in range(c4.x, x_max, 1):
+                            if k in vertical_edges.keys():
+                                low, high = min(vertical_edges[k][0]), max(vertical_edges[k][0])
+                                if low <= c4.y <= high:
+                                    vertical_max_counter += 1
+    
+                        for k in range(c4.y, y_min, -1):
+                            if k in horizontal_edges.keys():
+                                low, high = min(horizontal_edges[k][0]), max(horizontal_edges[k][0])
+                                if low <= c4.x <= high:
+                                    horizontal_min_counter += 1
+    
+                        for k in range(c4.y, y_max, 1):
+                            if k in horizontal_edges.keys():
+                                low, high = min(horizontal_edges[k][0]), max(horizontal_edges[k][0])
+                                if low <= c4.x <= high:
+                                    horizontal_max_counter += 1
+    
+                        print(f"{vertical_min_counter=}")
+                        print(f"{vertical_max_counter=}")
+                        print(f"{horizontal_min_counter=}")
+                        print(f"{horizontal_max_counter=}")
+
+                        plot_red_tiles(
+                            red_tile_coordinates=red_tile_coordinates,
+                            largest_rect_coordinates=[c1, c3, c2, c4]
+                        )
+                                        
+                    
+                    
+
+
+
+                
+            #         print(c1, c2, c1.y, c2.y)
+                
+            #         step = 1 if c2.y > c1.y else -1
+            #         start = c1.y - 1 if step == 1 else c1.y + 1
+            #         stop = c2.y + 2 if step == 1 else c2.y - 2
+                
+            #         for k in range(start, stop, step):
+            #             if k in vertical_edges.keys():
+            #                 print(k, vertical_edges[k])
+                        
+            #             else:
+            #                 print(k)
+            #         print()
+
+            #         print(c1, c2, c1.x, c2.x)
+                
+            #         step = 1 if c2.x > c1.x else -1
+            #         start = c1.x - 1 if step == 1 else c1.x + 1
+            #         stop = c2.x + 2 if step == 1 else c2.x - 2
+                
+            #         for k in range(start, stop, step):
+            #             print(k)
+
+            # print()
+     
+    return (exercise_9_2_find_largest_area,)
+
+
+@app.cell
+def _(example_red_tile_coordinates, exercise_9_2_find_largest_area):
+    solution_example_9_2 = exercise_9_2_find_largest_area(red_tile_coordinates=example_red_tile_coordinates)
+    return
+
+
+@app.cell
 def _():
+    # exercise_9_2_find_largest_area(red_tile_coordinates=red_tile_coordinates)
     return
 
 

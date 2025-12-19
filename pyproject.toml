@@ -10,6 +10,7 @@ dependencies = [
     "marimo>=0.18.1",
     "nbformat>=5.10.4",
     "numpy>=2.3.5",
+    "plotly>=6.5.0",
     "pulp>=3.3.0",
     "pyzmq>=27.1.0",
 ]
