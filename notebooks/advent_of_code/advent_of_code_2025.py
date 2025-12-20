@@ -3004,7 +3004,7 @@ def _(DATA_DIRECTORY_PATH, exercise_9_1_find_largest_rectangle, read_data):
     red_tile_coordinates = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_09.txt", separator="\n")
 
     exercise_9_1_find_largest_rectangle(red_tile_coordinates=red_tile_coordinates)
-    return
+    return (red_tile_coordinates,)
 
 
 @app.cell(hide_code=True)
@@ -3110,149 +3110,254 @@ def _(mo):
 
 
 @app.cell
-def _(defaultdict, plot_red_tiles):
+def _(plot_red_tiles):
     from collections import namedtuple
 
     def exercise_9_2_find_largest_area(
-        red_tile_coordinates: list[str]
+        red_tile_coordinates: list[str],
+        number_of_sampled_edge_points: int
     ) -> int:
-        """ """
-        # Get data in appropriate format.
+        """
+        Find the largest axis-aligned rectangle using only red and green tiles.
+
+        Red tiles form the vertices of a closed, orthogonal loop. Consecutive
+        red tiles are connected by straight lines of green tiles, and all tiles
+        inside this loop are also green. The loop defines a simple orthogonal
+        polygon without holes.
+
+        The rectangle must use two red tiles as opposite corners. All tiles
+        inside the rectangle, including its boundary, must lie entirely within
+        the red-green region defined by the polygon.
+
+        The core geometric insight is:
+        - A point is inside if it is bounded on all sides.
+
+        For each candidate rectangle, only points on the rectangle boundary
+        are tested. If every sampled boundary point is bounded on all four
+        cardinal directions by polygon edges, the rectangle is guaranteed to
+        lie fully inside the allowed region.
+
+        Early pruning is applied to discard rectangle candidates whose area
+        cannot exceed the current maximum.
+
+        Args:
+            red_tile_coordinates (list[str]):
+                Ordered list of red tile coordinates as "x,y" strings. Adjacent
+                entries are connected by straight horizontal or vertical paths.
+            number_of_sampled_edge_points (int): Number of points to sample on 
+                the rectangle edges, includes the corner points, so the minimum
+                value for this variable is 2.
+
+        Returns:
+            int:
+                The largest rectangle area that can be formed using only red
+                and green tiles.
+        """
         Point = namedtuple("Point", ["x", "y"])
+
+        # Get data in appropriate format.
         red_tile_coordinates = [
             Point(*[int(num) for num in row.split(",")])
             for row in red_tile_coordinates
         ]
-    
-        # Obtain min and max x and y coordinates.
-        all_x_coordinates = [coordinate.x for coordinate in red_tile_coordinates]
-        all_y_coordinates = [coordinate.y for coordinate in red_tile_coordinates]
-                         
-        x_min, x_max = min(all_x_coordinates) - 1, max(all_x_coordinates) + 1
-        y_min, y_max = min(all_y_coordinates) - 1, max(all_y_coordinates) + 1
 
-        # Transform the data so that it represents the edges between the coordinates/nodes.
-        horizontal_edges, vertical_edges = defaultdict(list), defaultdict(list)
-         
+        # Build edges (normalized)
+        horizontal_edges = []
+        vertical_edges = []
+
         for current, next in zip(red_tile_coordinates, red_tile_coordinates[1:] + red_tile_coordinates[:1]):
             if current.y == next.y:
-                horizontal_edges[current.y].append([current.x, next.x])
+                horizontal_edges.append((current.y, (min(current.x, next.x), max(current.x, next.x))))
             elif current.x == next.x:
-                vertical_edges[current.x].append([current.y, next.y])
+                vertical_edges.append((current.x, (min(current.y, next.y), max(current.y, next.y))))
 
-        horizontal_edges, vertical_edges = dict(sorted(horizontal_edges.items())), dict(sorted(vertical_edges.items()))
+        horizontal_edges.sort()
+        vertical_edges.sort()
+
+        def is_surrounded(
+            corner: Point,
+            horizontal_edges: list[tuple[int, tuple[int, int]]] = horizontal_edges,
+            vertical_edges: list[tuple[int, tuple[int, int]]] = vertical_edges,
+        ) -> bool:
+            """
+            Determine whether a point lies inside the red-green polygon.
     
-        for k, v in horizontal_edges.items():
-            print(k, v)
-        print()
-        for k, v in vertical_edges.items():
-            print(k, v)
-        print()
+            The polygon is represented implicitly by horizontal and vertical edges.
+            A point is considered inside (or on the boundary) if it is blocked by
+            at least one polygon edge in all four cardinal directions.
+    
+            This function checks for:
+            - A vertical edge to the left
+            - A vertical edge to the right
+            - A horizontal edge below
+            - A horizontal edge above
+    
+            The defining principle is:
+            A point is inside if it is bounded on all sides.
+    
+            This test is a specialized ray-casting variant optimized for simple
+            orthogonal polygons without holes.
+    
+            Args:
+                corner (Point):
+                    The point to test for containment.
+                horizontal_edges (list[tuple[int, tuple[int, int]]]):
+                    Horizontal polygon edges as (y, (x_min, x_max)).
+                vertical_edges (list[tuple[int, tuple[int, int]]]):
+                    Vertical polygon edges as (x, (y_min, y_max)).
+    
+            Returns:
+                bool:
+                    True if the point is inside or on the boundary of the polygon,
+                    False otherwise.
+            """
+            horizontal_left = False
+            horizontal_right = False
+            vertical_down = False
+            vertical_up = False
+
+            for _, (low, high) in (
+                (k, v) for k, v in vertical_edges if k <= corner.x
+            ):
+                if low <= corner.y <= high:
+                    horizontal_left = True
+                    break
+
+            for _, (low, high) in (
+                (k, v) for k, v in vertical_edges if k >= corner.x
+            ):
+                if low <= corner.y <= high:
+                    horizontal_right = True
+                    break
+
+            for _, (low, high) in (
+                (k, v) for k, v in horizontal_edges if k <= corner.y
+            ):
+                if low <= corner.x <= high:
+                    vertical_down = True
+                    break
+
+            for _, (low, high) in (
+                (k, v) for k, v in horizontal_edges if k >= corner.y
+            ):
+                if low <= corner.x <= high:
+                    vertical_up = True
+                    break
+
+            return (
+                horizontal_left
+                and horizontal_right
+                and vertical_down
+                and vertical_up
+            )
+
+        def interpolate_edge_points(
+            start_coordinate: int,
+            end_coordinate: int,
+            number_of_interpolated_points: int,
+        ) -> list[int]:
+            """
+            Construct integer sample points along a rectangle edge by interpolation.
+    
+            Args:
+                start_coordinate (int): Start coordinate.
+                end_coordinate (int): End coordinate.
+                number_of_interpolated_points (int): Number of points to sample along the 
+                    edge (must be >= 2).
+    
+            Returns:
+                list[int]: Integer coordinates sampled between the start and end values, 
+                    inclusive.
+            """
+            assert number_of_interpolated_points >= 2, ("number_of_interpolated_points must be at least 2")
+    
+            if number_of_interpolated_points == 2:
+                return [start_coordinate, end_coordinate]
+    
+            step = (end_coordinate - start_coordinate) / (number_of_interpolated_points - 1)
+            interpolated_coordinates = [round(start_coordinate + i * step) for i in range(number_of_interpolated_points)]
+
+            return interpolated_coordinates
+
+        largest_rect_area = 0
+        largest_rect_side_lengths = None
+        largest_rect_coordinates = None
 
         # Main loop
         for i in range(len(red_tile_coordinates)):
             for j in range(i):
-                if i == 2 and j == 0:
-                    c1 = red_tile_coordinates[i]
-                    c2 = red_tile_coordinates[j]
-    
-                    vertical_min_counter = 0
-                    vertical_max_counter = 0
-                    horizontal_min_counter = 0
-                    horizontal_max_counter = 0
-    
-                    # Assume that coordinates with the same x or y coordinate
-                    # will never create the largest rectangle area.
-                    if c1.x != c2.x and c1.y != c2.y:
-                        print(i, j)
-                        c3 = Point(x=c1.x, y=c2.y)
-                        c4 = Point(x=c2.x, y=c1.y)
-    
-                        for k in range(c4.x, x_min, -1):
-                            if k in vertical_edges.keys():
-                                low, high = min(vertical_edges[k][0]), max(vertical_edges[k][0])
-                                if low <= c4.y <= high:
-                                    vertical_min_counter += 1
-                    
-                        for k in range(c4.x, x_max, 1):
-                            if k in vertical_edges.keys():
-                                low, high = min(vertical_edges[k][0]), max(vertical_edges[k][0])
-                                if low <= c4.y <= high:
-                                    vertical_max_counter += 1
-    
-                        for k in range(c4.y, y_min, -1):
-                            if k in horizontal_edges.keys():
-                                low, high = min(horizontal_edges[k][0]), max(horizontal_edges[k][0])
-                                if low <= c4.x <= high:
-                                    horizontal_min_counter += 1
-    
-                        for k in range(c4.y, y_max, 1):
-                            if k in horizontal_edges.keys():
-                                low, high = min(horizontal_edges[k][0]), max(horizontal_edges[k][0])
-                                if low <= c4.x <= high:
-                                    horizontal_max_counter += 1
-    
-                        print(f"{vertical_min_counter=}")
-                        print(f"{vertical_max_counter=}")
-                        print(f"{horizontal_min_counter=}")
-                        print(f"{horizontal_max_counter=}")
+                c1 = red_tile_coordinates[i]
+                c3 = red_tile_coordinates[j]
 
-                        plot_red_tiles(
-                            red_tile_coordinates=red_tile_coordinates,
-                            largest_rect_coordinates=[c1, c3, c2, c4]
-                        )
-                                        
-                    
-                    
+                if c1.x != c3.x and c1.y != c3.y:
+                    width = 1 + abs(c1.x - c3.x)
+                    height = 1 + abs(c1.y - c3.y)
+                    rectangle_area = width * height
 
+                    # Early pruning
+                    if rectangle_area <= largest_rect_area:
+                        continue
 
+                    c4 = Point(x=c1.x, y=c3.y)
+                    c2 = Point(x=c3.x, y=c1.y)
 
-                
-            #         print(c1, c2, c1.y, c2.y)
-                
-            #         step = 1 if c2.y > c1.y else -1
-            #         start = c1.y - 1 if step == 1 else c1.y + 1
-            #         stop = c2.y + 2 if step == 1 else c2.y - 2
-                
-            #         for k in range(start, stop, step):
-            #             if k in vertical_edges.keys():
-            #                 print(k, vertical_edges[k])
-                        
-            #             else:
-            #                 print(k)
-            #         print()
+                    xs = interpolate_edge_points(c1.x, c3.x, number_of_sampled_edge_points)
+                    ys = interpolate_edge_points(c1.y, c3.y, number_of_sampled_edge_points)
 
-            #         print(c1, c2, c1.x, c2.x)
-                
-            #         step = 1 if c2.x > c1.x else -1
-            #         start = c1.x - 1 if step == 1 else c1.x + 1
-            #         stop = c2.x + 2 if step == 1 else c2.x - 2
-                
-            #         for k in range(start, stop, step):
-            #             print(k)
+                    test_points = []
 
-            # print()
-     
+                    for x in xs:
+                        test_points.append(Point(x, c1.y))
+                        test_points.append(Point(x, c3.y))
+
+                    for y in ys:
+                        test_points.append(Point(c1.x, y))
+                        test_points.append(Point(c3.x, y))
+
+                    if all(is_surrounded(p) for p in test_points):
+                        largest_rect_area = rectangle_area
+                        largest_rect_side_lengths = (width, height)
+                        largest_rect_coordinates = [c1, c4, c3, c2]
+
+        plot_red_tiles(
+            red_tile_coordinates=red_tile_coordinates,
+            largest_rect_coordinates=largest_rect_coordinates
+        )
+
+        print("Largest rectangle:")
+        print(f"- Width:  {largest_rect_side_lengths[0]}")
+        print(f"- Height: {largest_rect_side_lengths[1]}")
+        print(
+            f"- Area:   {largest_rect_side_lengths[0]} "
+            f"* {largest_rect_side_lengths[1]} "
+            f"= {largest_rect_area}"
+        )
+
+        return largest_rect_area
     return (exercise_9_2_find_largest_area,)
 
 
 @app.cell
 def _(example_red_tile_coordinates, exercise_9_2_find_largest_area):
-    solution_example_9_2 = exercise_9_2_find_largest_area(red_tile_coordinates=example_red_tile_coordinates)
+    solution_example_9_2 = exercise_9_2_find_largest_area(
+        red_tile_coordinates=example_red_tile_coordinates,
+        number_of_sampled_edge_points=2
+    )
     return
 
 
 @app.cell
-def _():
-    # exercise_9_2_find_largest_area(red_tile_coordinates=red_tile_coordinates)
-    return
+def _(exercise_9_2_find_largest_area, red_tile_coordinates):
+    # Empirically determined that 44 is the first integer that produces the correct answer.
+    # Takes about 40 seconds to retrieve the result.
+    # Replacing the sampling method with a more sophisticated method that does not perform
+    # duplicate computations will significantly improve the computation time.
+    number_of_sampled_edge_points = 44
 
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ## Day 10 - Factory
-    """)
+    largest_rectangle_area = exercise_9_2_find_largest_area(
+        red_tile_coordinates=red_tile_coordinates,
+        number_of_sampled_edge_points=number_of_sampled_edge_points
+    )
     return
 
 
