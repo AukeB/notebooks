@@ -41,7 +41,7 @@ def _(mo):
 @app.cell
 def _():
     DATA_DIRECTORY_PATH = "data/advent_of_code"
-    # DATA_DIRECTORY_PATH = "../" + DATA_DIRECTORY_PATH
+    # DATA_DIRECTORY_PATH = "../../" + DATA_DIRECTORY_PATH
     return (DATA_DIRECTORY_PATH,)
 
 
@@ -2927,7 +2927,7 @@ def _():
 @app.cell
 def _(plot_red_tiles):
     def exercise_9_1_find_largest_rectangle(
-        red_tile_coordinates: list[str],
+        red_tile_data: list[str],
     ) -> int:
         """
         Find the largest possible rectangle area formed by any two red tiles as opposite corners.
@@ -2937,13 +2937,13 @@ def _(plot_red_tiles):
         and the largest resulting rectangle area is returned.
 
         Args:
-            red_tile_coordinates (list[str]): List of red tile positions as "x,y" strings.
+            red_tile_data (list[str]): List of red tile positions as "x,y" strings.
 
         Returns:
             int: The largest rectangle area formed by any pair of red tiles.
         """
         red_tile_coordinates = [
-            [int(num) for num in row.split(",")] for row in red_tile_coordinates
+            [int(num) for num in row.split(",")] for row in red_tile_data
         ]
 
         largest_rect_area = 0
@@ -2982,7 +2982,7 @@ def _(plot_red_tiles):
 
 @app.cell
 def _(exercise_9_1_find_largest_rectangle):
-    example_red_tile_coordinates = [
+    example_red_tile_data = [
         "7,1",
         "11,1",
         "11,7",
@@ -2993,18 +2993,18 @@ def _(exercise_9_1_find_largest_rectangle):
         "7,3",
     ]
 
-    solution_example_9_1 = exercise_9_1_find_largest_rectangle(red_tile_coordinates=example_red_tile_coordinates)
+    solution_example_9_1 = exercise_9_1_find_largest_rectangle(red_tile_data=example_red_tile_data)
 
     assert solution_example_9_1 == 50
-    return (example_red_tile_coordinates,)
+    return (example_red_tile_data,)
 
 
 @app.cell
 def _(DATA_DIRECTORY_PATH, exercise_9_1_find_largest_rectangle, read_data):
-    red_tile_coordinates = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_09.txt", separator="\n")
+    red_tile_data = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2025_day_09.txt", separator="\n")
 
-    exercise_9_1_find_largest_rectangle(red_tile_coordinates=red_tile_coordinates)
-    return (red_tile_coordinates,)
+    exercise_9_1_find_largest_rectangle(red_tile_data=red_tile_data)
+    return
 
 
 @app.cell(hide_code=True)
@@ -3110,11 +3110,130 @@ def _(mo):
 
 
 @app.cell
-def _(plot_red_tiles):
+def _(example_red_tile_data, plot_red_tiles):
     from collections import namedtuple
 
+    Point = namedtuple("Point", ["x", "y"])
+
+    class MovieTheater():
+        """ """
+
+        def __init__(
+            self,
+            red_tile_data: list[str]
+        ) -> None:
+            """ """
+            self.red_tile_coordinates = [
+                Point(*[int(coordinate) for coordinate in row.split(",")])
+                for row in red_tile_data
+            ]
+
+            self.horizontal_edges, self.vertical_edges = self._compute_edges()
+
+            self.largest_rect_area = 0
+            self.largest_rect_edge_lengths = None
+            self.largest_rect_coordinates = None
+
+        def _compute_edges(self) -> tuple[list, list]:
+            """ """
+            horizontal_edges, vertical_edges = [], []
+        
+            for current, next in zip(self.red_tile_coordinates, self.red_tile_coordinates[1:] + self.red_tile_coordinates[:1]):
+                if current.y == next.y:
+                    horizontal_edges.append((current.y, (min(current.x, next.x), max(current.x, next.x))))
+                elif current.x == next.x:
+                    vertical_edges.append((current.x, (min(current.y, next.y), max(current.y, next.y))))
+    
+            horizontal_edges.sort()
+            vertical_edges.sort()
+
+            return horizontal_edges, vertical_edges
+
+        def _horizontal_enclosure(self, corner: Point) -> tuple[bool, bool]:
+            """ """
+            left = False
+            right = False
+    
+            for _, (low, high) in ((k, v) for k, v in self.vertical_edges if k <= corner.x):
+                if low <= corner.y <= high:
+                    left = True
+                    break
+    
+            for _, (low, high) in ((k, v) for k, v in self.vertical_edges if k >= corner.x):
+                if low <= corner.y <= high:
+                    right = True
+                    break
+    
+            return left, right
+
+        def _vertical_enclosure(self, corner: Point) -> tuple[bool, bool]:
+            """ """
+            down = False
+            up = False
+    
+            for _, (low, high) in ((k, v) for k, v in self.horizontal_edges if k <= corner.y):
+                if low <= corner.x <= high:
+                    down = True
+                    break
+    
+            for _, (low, high) in ((k, v) for k, v in self.horizontal_edges if k >= corner.y):
+                if low <= corner.x <= high:
+                    up = True
+                    break
+    
+            return down, up
+
+        def compute_largest_rectangle(self) -> int:
+            """ """
+            for i in range(len(self.red_tile_coordinates)):
+                for j in range(i):
+                    corner_1 = self.red_tile_coordinates[i]
+                    corner_3 = self.red_tile_coordinates[j]
+    
+                    if corner_1.x != corner_3.x and corner_1.y != corner_3.y:
+                        width = 1 + abs(corner_1.x - corner_3.x)
+                        height = 1 + abs(corner_1.y - corner_3.y)
+                        rectangle_area = width * height
+    
+                        if rectangle_area <= self.largest_rect_area:
+                            continue
+    
+                        corner_2 = Point(x=corner_1.x, y=corner_3.y)
+                        corner_4 = Point(x=corner_3.x, y=corner_1.y)
+        
+                        corner_points = [corner_2, corner_4]
+                    
+                        if all(all(self._horizontal_enclosure(p)) and all(self._vertical_enclosure(p)) for p in corner_points):
+                            self.largest_rect_area = rectangle_area
+                            self.largest_rect_side_lengths = (width, height)
+                            self.largest_rect_coordinates = [corner_1, corner_2, corner_3, corner_4]
+
+            plot_red_tiles(
+                red_tile_coordinates=self.red_tile_coordinates,
+                largest_rect_coordinates=self.largest_rect_coordinates
+            )
+    
+            print("Largest rectangle:")
+            print(f"- Width:  {self.largest_rect_side_lengths[0]}")
+            print(f"- Height: {self.largest_rect_side_lengths[1]}")
+            print(
+                f"- Area:   {self.largest_rect_side_lengths[0]} "
+                f"* {self.largest_rect_side_lengths[1]} "
+                f"= {self.largest_rect_area}"
+            )
+        
+            return self.largest_rect_area
+    
+
+    movie_theather = MovieTheater(red_tile_data=example_red_tile_data)
+    movie_theather.compute_largest_rectangle()
+    return (namedtuple,)
+
+
+@app.cell
+def _(namedtuple, plot_red_tiles):
     def exercise_9_2_find_largest_area(
-        red_tile_coordinates: list[str],
+        red_tile_data: list[str],
         number_of_sampled_edge_points: int
     ) -> int:
         """
@@ -3158,7 +3277,7 @@ def _(plot_red_tiles):
         # Get data in appropriate format.
         red_tile_coordinates = [
             Point(*[int(num) for num in row.split(",")])
-            for row in red_tile_coordinates
+            for row in red_tile_data
         ]
 
         # Build edges (normalized)
@@ -3181,23 +3300,23 @@ def _(plot_red_tiles):
         ) -> bool:
             """
             Determine whether a point lies inside the red-green polygon.
-    
+
             The polygon is represented implicitly by horizontal and vertical edges.
             A point is considered inside (or on the boundary) if it is blocked by
             at least one polygon edge in all four cardinal directions.
-    
+
             This function checks for:
             - A vertical edge to the left
             - A vertical edge to the right
             - A horizontal edge below
             - A horizontal edge above
-    
+
             The defining principle is:
             A point is inside if it is bounded on all sides.
-    
+
             This test is a specialized ray-casting variant optimized for simple
             orthogonal polygons without holes.
-    
+
             Args:
                 corner (Point):
                     The point to test for containment.
@@ -3205,7 +3324,7 @@ def _(plot_red_tiles):
                     Horizontal polygon edges as (y, (x_min, x_max)).
                 vertical_edges (list[tuple[int, tuple[int, int]]]):
                     Vertical polygon edges as (x, (y_min, y_max)).
-    
+
             Returns:
                 bool:
                     True if the point is inside or on the boundary of the polygon,
@@ -3258,22 +3377,22 @@ def _(plot_red_tiles):
         ) -> list[int]:
             """
             Construct integer sample points along a rectangle edge by interpolation.
-    
+
             Args:
                 start_coordinate (int): Start coordinate.
                 end_coordinate (int): End coordinate.
                 number_of_interpolated_points (int): Number of points to sample along the 
                     edge (must be >= 2).
-    
+
             Returns:
                 list[int]: Integer coordinates sampled between the start and end values, 
                     inclusive.
             """
             assert number_of_interpolated_points >= 2, ("number_of_interpolated_points must be at least 2")
-    
+
             if number_of_interpolated_points == 2:
                 return [start_coordinate, end_coordinate]
-    
+
             step = (end_coordinate - start_coordinate) / (number_of_interpolated_points - 1)
             interpolated_coordinates = [round(start_coordinate + i * step) for i in range(number_of_interpolated_points)]
 
@@ -3338,26 +3457,26 @@ def _(plot_red_tiles):
 
 
 @app.cell
-def _(example_red_tile_coordinates, exercise_9_2_find_largest_area):
+def _(example_red_tile_data, exercise_9_2_find_largest_area):
     solution_example_9_2 = exercise_9_2_find_largest_area(
-        red_tile_coordinates=example_red_tile_coordinates,
+        red_tile_data=example_red_tile_data,
         number_of_sampled_edge_points=2
     )
     return
 
 
 @app.cell
-def _(exercise_9_2_find_largest_area, red_tile_coordinates):
+def _():
     # Empirically determined that 44 is the first integer that produces the correct answer.
     # Takes about 40 seconds to retrieve the result.
     # Replacing the sampling method with a more sophisticated method that does not perform
     # duplicate computations will significantly improve the computation time.
     number_of_sampled_edge_points = 44
 
-    largest_rectangle_area = exercise_9_2_find_largest_area(
-        red_tile_coordinates=red_tile_coordinates,
-        number_of_sampled_edge_points=number_of_sampled_edge_points
-    )
+    # largest_rectangle_area = exercise_9_2_find_largest_area(
+    #     red_tile_data=red_tile_data,
+    #     number_of_sampled_edge_points=number_of_sampled_edge_points
+    # )
     return
 
 
