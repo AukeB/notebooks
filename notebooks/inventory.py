@@ -33,6 +33,16 @@ def _(
     return
 
 
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
 @app.cell(column=1, hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -139,7 +149,9 @@ def _(
                 ],
                 "mid": [
                     (self.char_set_item_slot["vertical_line"], 1),
-                    (self.char_set_item_slot["empty"], 4),
+                    (" ", 1),
+                    ("‡", 2),
+                    (" ", 1),
                     (self.char_set_item_slot["vertical_line"], 1),
                 ],
                 "bot": [
@@ -170,7 +182,7 @@ def _(
             row_top = row_start.copy()
             row_mid = row_start.copy()
             row_bot = row_start.copy()
-        
+
             for _ in range(self.item_slot_grid_dimensions.width):
                 row_top.extend(self.item_slot_layout["top"])
                 row_mid.extend(self.item_slot_layout["mid"])
@@ -187,7 +199,7 @@ def _(
             }
 
             return rows_with_item_slots
-            
+
         def _construct_rows(
             self,
         ) -> dict[str, list[tuple[str, int]]]:
@@ -255,10 +267,7 @@ def _(
                 print(inventory_row)
 
 
-            
-            
 
-            
     return (InventoryDrawer,)
 
 
