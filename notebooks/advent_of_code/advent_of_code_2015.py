@@ -1402,23 +1402,23 @@ def _():
         the total number of characters in memory for the values of the strings.
         Handles three escape sequences: \\\\ (single backslash), \\" (lone double-quote),
         and \\x followed by two hexadecimal characters (single ASCII character).
-    
+
         1. Initialise the difference counter with 2 per line to account for the
            surrounding double-quote characters.
         2. For each line, walk character by character; when a backslash is found,
            identify the escape sequence and increment the difference counter by the
            number of code characters that collapse into one in-memory character.
-    
+
         Args:
             santas_list (list[str]): The double-quoted string literals from Santa's
                 digital list, one per line.
-    
+
         Returns:
             difference_counter (int): Total characters of code minus total characters
                 in memory across all string literals.
         """
         difference_counter = 2 * len(santas_list)
-    
+
         for line in santas_list:
             char_index: int = 0
 
@@ -1783,69 +1783,86 @@ def _(mo):
     return
 
 
+@app.function
+def exercise_10_1_compute_look_and_say_sequence(
+    start_value: str, number_of_iterations: int
+) -> list[str]:
+    """
+    Apply the look-and-say transformation iteratively, returning the full sequence.
+
+    Each step reads the current value as runs of identical digits and encodes
+    each run as its length followed by the digit. The returned list includes
+    the original start_value as the first element.
+
+    Args:
+        start_value (str): The initial digit string to begin the sequence from.
+        number_of_iterations (int): The number of look-and-say steps to apply.
+
+    Returns:
+        look_and_say_sequence (list[str]): All values in the sequence, from
+            start_value through the final transformed value.
+    """
+    look_and_say_sequence = [start_value]
+    current_value = start_value
+
+    for _ in range(number_of_iterations):
+        next_value = ""
+        char_index = 0
+
+        while char_index < len(current_value):
+            cur_char = current_value[char_index]
+            char_counter = 1
+
+            while (
+                char_index + char_counter < len(current_value)
+                and current_value[char_index + char_counter] == cur_char
+            ):
+                char_counter += 1
+
+            next_value += f"{char_counter}{cur_char}"
+            char_index += char_counter
+
+        look_and_say_sequence.append(next_value)
+        current_value = next_value
+
+    return look_and_say_sequence
+
+
 @app.cell
 def _():
-    def exercise_10_1_compute_look_and_say_sequence(start_value: str, number_of_iterations: int=1) -> int:
-        """ """
-        look_and_say_sequence = [start_value]
-        current_value = start_value
-    
-        for num_iter in range(number_of_iterations):
-            next_value = ""
-            cur_char_index = 0
+    solution_10_1_length_result = exercise_10_1_compute_look_and_say_sequence(
+        start_value="1113222113", number_of_iterations=40
+    )
 
-            print(f"{current_value=}")
-
-            while cur_char_index < len(current_value):
-                cur_char = current_value[cur_char_index]
-                next_char_index = cur_char_index + 1
-                char_counter = 1
-
-                print(cur_char_index, cur_char)
-
-                while next_char_index < len(current_value):
-                    next_char = current_value[next_char_index]
-
-                    if next_char == cur_char:
-                        char_counter += 1
-                    else:
-                        next_value += f"{char_counter}{cur_char}"
-                        cur_char_index = next_char_index + 1
-                        break
-
-                    print(next_char_index, next_char, char_counter, next_value)
-                    
-                    next_char_index += 1
-                            
-                cur_char_index += 1
-
-            
-                print(f"{next_value=}")
-                print()
+    print(f"{len(solution_10_1_length_result[-1])=}")
+    return
 
 
-            look_and_say_sequence.append(next_value)
-            current_value = next_value
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Instructions
+    """)
+    return
 
-        # for x in look_and_say_sequence:
-        #     print(x)
-    
-        return look_and_say_sequence
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Neat, right? You might also enjoy hearing John Conway talking about this sequence (that's Conway of Conway's Game of Life fame).
 
-    solution_10_1_length_result = exercise_10_1_compute_look_and_say_sequence(start_value="11")
-
-    # print(f"{solution_10_1_length_result=}")
+    Now, starting again with the digits in your puzzle input, apply this process 50 times. What is the length of the new result?
+    """)
     return
 
 
 @app.cell
 def _():
-    return
+    solution_10_2_length_result = exercise_10_1_compute_look_and_say_sequence(
+        start_value="1113222113", number_of_iterations=50
+    )
 
-
-@app.cell
-def _():
+    print(f"{len(solution_10_2_length_result[-1])=}")
     return
 
 
