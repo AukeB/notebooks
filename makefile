@@ -20,13 +20,19 @@ mypy:
 		--follow-imports=skip
 	@echo "🔍 Successfully executed mypy."
 
+# Remove caches and temporary files
 clean:
 	@find . -type d \( \
-		-name '__pycache__' \
+		-name '__pycache__' -o \
+		-name '.ruff_cache' -o \
+		-name '.mypy_cache' -o \
+		-name '.pytest_cache' -o \
+		-name '__marimo__' \
 	\) -exec rm -rf {} +
-	@rm -f  .python-version
+	@rm -f .coverage .python-version
+	@rm -rf artifacts
 	@echo "🧹 Successfully cleaned project."
-
+	
 git:
 	git add -A
 	git commit -m "Updated"
