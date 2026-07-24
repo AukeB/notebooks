@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.4"
+__generated_with = "0.23.14"
 app = marimo.App(width="columns")
 
 
@@ -29,6 +29,7 @@ def _():
     from collections import defaultdict, namedtuple
 
     from advent_of_code_utils import read_data
+
     return defaultdict, mo, namedtuple, np, permutations, read_data
 
 
@@ -139,6 +140,7 @@ def _(defaultdict):
         final_floor_number = starting_floor_number + direction_count["up"] - direction_count["down"]
 
         return final_floor_number
+
     return (exercise_1_1_find_the_final_floor_number,)
 
 
@@ -900,6 +902,7 @@ def _(defaultdict):
                 number_of_nice_strings += 1
 
         return number_of_nice_strings
+
     return (exercise_5_2_find_number_of_nice_strings,)
 
 
@@ -1011,6 +1014,7 @@ def _(Point, np):
         number_of_lit_lights = int(grid_of_lights.sum())
 
         return number_of_lit_lights
+
     return (exercise_6_1_find_number_of_lit_lights,)
 
 
@@ -1109,6 +1113,7 @@ def _(Point, np):
         number_of_lit_lights = int(grid_of_lights.sum())
 
         return number_of_lit_lights
+
     return (exercise_6_2_find_number_of_lit_lights,)
 
 
@@ -1276,6 +1281,7 @@ def _():
         result = dict(sorted(wire_signal_values.items()))
 
         return result
+
     return (exercise_7_1_find_signal_value,)
 
 
@@ -1438,6 +1444,7 @@ def _():
                     char_index += 1
 
         return difference_counter
+
     return (exercise_8_1_special_character_analysis,)
 
 
@@ -1628,6 +1635,7 @@ def _(np, permutations):
                 shortest_route = distance_current_route
 
         return int(shortest_route)
+
     return (exercise_9_1_find_shortest_route,)
 
 
@@ -1726,6 +1734,7 @@ def _(np, permutations):
                 longest_route = distance_current_route
 
         return int(longest_route)
+
     return (exercise_9_2_find_longest_route,)
 
 
@@ -1936,15 +1945,15 @@ def exercise_11_1_find_next_password(input_password: str) -> str:
     num_iter = 50
 
     next_password = input_password
-    
+
     for _ in range(num_iter):
         print(next_password)
         final_character = next_password[-1]
-        
+
         if final_character == "z":
             new_password = []
             z_detected = False
-            
+
             for character in next_password[::-1]:
                 if character == "z":
                     z_detected = True
@@ -1971,8 +1980,255 @@ def _():
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Instructions
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Solution
+    """)
+    return
+
+
 @app.cell
 def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Day 12: JSAbacusFramework.io
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Instructions
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Solution
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Instructions
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Solution
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Day 13: Knights of the Dinner Table
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Instructions
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Solution
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Instructions
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 2 - Solution
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Day 14: Reindeer Olympics
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Part 1 - Instructions
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    This year is the Reindeer Olympics! Reindeer can fly at high speeds, but must rest occasionally to recover their energy. Santa would like to know which of his reindeer is fastest, and so he has them race.
+
+    Reindeer can only either be flying (always at their top speed) or resting (not moving at all), and always spend whole seconds in either state.
+
+    For example, suppose you have the following Reindeer:
+
+    - Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.
+    - Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.
+
+    After one second, Comet has gone 14 km, while Dancer has gone 16 km. After ten seconds, Comet has gone 140 km, while Dancer has gone 160 km. On the eleventh second, Comet begins resting (staying at 140 km), and Dancer continues on for a total distance of 176 km. On the 12th second, both reindeer are resting. They continue to rest until the 138th second, when Comet flies for another ten seconds. On the 174th second, Dancer flies for another 11 seconds.
+
+    In this example, after the 1000th second, both reindeer are resting, and Comet is in the lead at 1120 km (poor Dancer has only gotten 1056 km by that point). So, in this situation, Comet would win (if the race ended at 1000 seconds).
+
+    Given the descriptions of each reindeer (in your puzzle input), after exactly 2503 seconds, what distance has the winning reindeer traveled?
+    """)
+    return
+
+
+@app.function
+def exercise_14_1_find_fastest_reinder(
+    reindeer_descriptions: list[str],
+    total_time: int = 2503
+) -> int:
+    """
+    Simulate each reindeer's flight and rest cycles to find the winning distance.
+
+    1. Parse each reindeer description into its speed, move duration, rest
+       duration, and combined cycle duration.
+    2. Step through every second up to total_time, tracking each reindeer's
+       cumulative distance based on whether it is flying or resting.
+    3. Return the distance traveled by the reindeer that is furthest ahead.
+
+    Args:
+        reindeer_descriptions (list[str]): Raw puzzle input lines, one per
+            reindeer.
+        total_time (int): Number of seconds the race runs for.
+
+    Returns:
+        winning_reindeer_distance_traveled (int): Distance traveled by the
+            leading reindeer once the race ends.
+    """
+    reindeers = {}
+    
+    for reindeer_description in reindeer_descriptions:
+        reindeer_data = reindeer_description.split()
+
+        reindeers[reindeer_data[0]] = {
+            "move_speed": int(reindeer_data[3]),
+            "move_duration": int(reindeer_data[6]),
+            "rest_speed": 0,
+            "rest_duration": int(reindeer_data[13]),
+            "cycle_duration": int(reindeer_data[6]) + int(reindeer_data[13]),
+            "traveled": [[0, 0]]
+        }
+
+    for i in range(total_time + 1):
+        for reindeer_name, reindeer_stats in reindeers.items():
+            j = i % reindeer_stats["cycle_duration"]
+            
+            if j > 0 and j <= reindeer_stats["move_duration"]:
+                reindeers[reindeer_name]["traveled"].append(
+                    [i, reindeer_stats["traveled"][-1][1] + reindeer_stats["move_speed"]]
+                )
+            else:
+                reindeers[reindeer_name]["traveled"].append(
+                    [i, reindeer_stats["traveled"][-1][1] + reindeer_stats["rest_speed"]]
+                )
+
+    winning_reindeer_distance_traveled = max([reinder_stats["traveled"][-1][1] for reinder_name, reinder_stats in reindeers.items()])
+                                              
+    return winning_reindeer_distance_traveled
+
+
+@app.cell
+def _(DATA_DIRECTORY_PATH, read_data):
+    reindeer_descriptions: list[str] = read_data(file_path=f"{DATA_DIRECTORY_PATH}/2015_day_14.txt", separator="\n")
+
+    winning_reindeer_distance_traveled = exercise_14_1_find_fastest_reinder(
+        reindeer_descriptions=reindeer_descriptions
+    )
+
+    print(f"{winning_reindeer_distance_traveled=}")
     return
 
 
