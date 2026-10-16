@@ -18,6 +18,11 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "docstring-tailor>=0.4.1",
     "mypy>=1.19.0",
+    "pyright>=1.1.414",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.1.0",
     "ruff>=0.14.8",
+    "ty>=0.0.29",
 ]
