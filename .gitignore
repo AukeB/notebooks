@@ -5,6 +5,7 @@ __pycache__/
 .ipynb_checkpoints/
 artifcats/
 __marimo__
+data/
 
 # Virtual environments
 venv/
@@ -110,6 +111,3 @@ Desktop.ini
 bitmaps/.~lock*
 bitmaps/.~lock.*#
 **/readme.todo
-
-# Specific files
-notebooks/advent_of_code/advent_of_code_2025_dev.py

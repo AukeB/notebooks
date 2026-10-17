@@ -52,7 +52,7 @@ def _(mo):
 
 @app.cell
 def _(pytesseract):
-    pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract" # ty: ignore
+    pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
     return
 
 
@@ -67,13 +67,12 @@ def _(mo):
 @app.cell
 def _(Image, Path, pytesseract):
     def extract_texts_from_folder(folder_path: str) -> list[str]:
-        """
-        Load all JPG files in a folder, sorted by filename,
-        perform OCR, and return a list of extracted strings.
+        """Load all JPG files in a folder, sorted by filename, perform OCR, and
+        return a list of extracted strings.
         """
         folder = Path(folder_path)
 
-        image_files: list[Path] = sorted(folder.glob(pattern="*.jpg"))
+        image_files: list = sorted(folder.glob(pattern="*.jpg"))
 
         texts: list = []
 
@@ -82,10 +81,9 @@ def _(Image, Path, pytesseract):
             texts.append(text)
 
         return texts
+
     def save_texts_to_file(texts: list[str], output_file: str) -> None:
-        """
-        Save a list of OCR strings to a text file.
-        """
+        """Save a list of OCR strings to a text file."""
         with open(output_file, mode="w", encoding="utf-8") as f:
             for i, text in enumerate(texts, start=1):
                 f.write(f"===== IMAGE {i} =====\n")
