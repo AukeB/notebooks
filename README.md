@@ -1,6 +1,6 @@
 # Notebooks
 
-This repository contains all kinds of different notebooks.
+This repository contains different kinds of notebooks.
 
 **Notebooks**:
 
