@@ -18,12 +18,12 @@ format-docstrings:
 
 # Static type-check code with pyright (same engine as Pylance in VS Code).
 pyright:
-	uv run pyright
+	uv run pyright $(PROJECT_NAME)
 	@echo "🔍 Successfully executed pyright."
 
 # Static type-check code with ty.
 ty:
-	uv run ty check
+	uv run ty check $(PROJECT_NAME)
 	@echo "🔍 Successfully executed ty."
 
 # Remove caches and temporary files

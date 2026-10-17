@@ -67,8 +67,18 @@ def _(mo):
 @app.cell
 def _(Image, Path, pytesseract):
     def extract_texts_from_folder(folder_path: str) -> list[str]:
-        """Load all JPG files in a folder, sorted by filename, perform OCR, and
-        return a list of extracted strings.
+        """Run OCR on every JPG image in a folder.
+
+        The images are read in sorted filename order. Only files ending in
+        ``.jpg`` (lowercase) are processed.
+
+        Args:
+            folder_path (str): The path to the folder that contains the JPG
+                images.
+
+        Returns:
+            list[str]: The text extracted from each image, in the same order as
+                the image files.
         """
         folder = Path(folder_path)
 
@@ -83,7 +93,17 @@ def _(Image, Path, pytesseract):
         return texts
 
     def save_texts_to_file(texts: list[str], output_file: str) -> None:
-        """Save a list of OCR strings to a text file."""
+        """Save OCR results to a text file, one block per image.
+
+        Each block starts with a header line ``===== IMAGE n =====``, where
+        ``n`` is the 1-based position of the text in the list, followed by the
+        text and a blank line.
+
+        Args:
+            texts (list[str]): The OCR text of each image.
+            output_file (str): The path of the text file to write. An existing
+                file is overwritten.
+        """
         with open(output_file, mode="w", encoding="utf-8") as f:
             for i, text in enumerate(texts, start=1):
                 f.write(f"===== IMAGE {i} =====\n")

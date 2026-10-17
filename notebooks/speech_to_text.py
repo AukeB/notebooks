@@ -106,12 +106,13 @@ def _(YouTube, pytube):
                 corresponding timestamp in the format "m:ss.s".
 
         Example:
-            data = [ {'start': '0.00', 'text': 'This is the first sentence.'},
-            {'start': '1.23', 'text': 'This is the second sentence.'}, {'start':
-            '3.45', 'text': 'This is the third sentence.'} ] merged_text =
-            merge_text_with_timestamp(data) print(merged_text) # Output: #
-            [0:00.0] This is the first sentence. [0:01.2] This is the second
-            sentence. [0:03.5] This is the third sentence.
+            >>> data = [
+            ...     {"start": "0.00", "text": "This is the first sentence."},
+            ...     {"start": "1.23", "text": "This is the second sentence."},
+            ...     {"start": "3.45", "text": "This is the third sentence."},
+            ... ]
+            >>> print(merge_text_with_timestamp(data))
+            [0m0.0s] This is the first sentence. [0m1.2s] This is the second sentence. [0m3.5s] This is the third sentence.
         """
         merged_text = ""
         for entry in data:
