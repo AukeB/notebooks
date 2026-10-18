@@ -3,7 +3,7 @@ name = "notebooks"
 version = "0.1.0"
 description = "Repository used for stand-alone notebooks."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "marimo>=0.23.3",
     "openai-whisper>=20250625",
