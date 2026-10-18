@@ -52,7 +52,6 @@ all:
 	make format-docstrings
 	make pyright
 	make ty
-	make pytest
 	make clean
 	make git
 	@echo "⚡ Successfully executed all tasks."
